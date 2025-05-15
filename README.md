@@ -1,6 +1,8 @@
 # n8n-sdk-python
 
-This is an unofficial Python SDK for the n8n workflow automation platform. This SDK provides convenient wrappers for interacting with the n8n API, allowing you to manage workflows, executions, credentials, and other n8n resources from your Python applications.
+[ English | [繁體中文](docs/README_TW.md) ]
+
+This is an unofficial Python SDK for the [n8n workflow](https://n8n.io/) automation platform. This SDK provides convenient wrappers for interacting with the n8n API, allowing you to manage workflows, executions, credentials, and other n8n resources from your Python applications.
 
 ## Table of Contents
 - [System Requirements](#system-requirements)

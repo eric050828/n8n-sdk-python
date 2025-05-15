@@ -1,77 +1,247 @@
 """
-n8n 資料模型。
-統一匯出所有資料模型。
+n8n data models.
+Export all data models in a unified way.
 """
 
 from .base import N8nBaseModel
-from .workflows import (
-    Workflow, WorkflowShort, WorkflowCreate, WorkflowUpdate, WorkflowList,
-    Tag, TagList, Connection, Node, NodeCredential, WorkflowSettings,
-    WorkflowTransferRequest, WorkflowTagUpdateRequestItem
-)
-from .executions import (
-    Execution, ExecutionShort, ExecutionCreate, ExecutionStatus, ExecutionList,
-    DataItem, BinaryDataItem
-)
-from .nodes import (
-    NodeType, NodeConnection, NodeParameterValue, NodeTypeDescription,
-    NodeTypeList, NodeCreateResult, NodeCreateError, NodeParameterOption,
-    NodeParameterOptions, NodePropertyType, NodePropertyOptions
+from .audit import (
+    AuditAdditionalOptions,
+    AuditReportLocationItem,
+    AuditReportSection,
+    AuditRiskReport,
+    AuditResponse
 )
 from .credentials import (
-    Credential, CredentialShort, CredentialCreate,
-    CredentialType, CredentialDataSchemaResponse, CredentialTransferRequest
+    CredentialType,
+    CredentialDataSchemaResponse,
+    CredentialTransferRequest,
+    NodeAccess,
+    CredentialTypeProperty,
+    CredentialTypeDescription,
+    CredentialData,
+    CredentialListItem,
+    CredentialDetail,
+    CredentialTestResult,
+    CredentialSharing,
+    CredentialShort,
+    Credential,
+    CredentialCreate,
+    CredentialUpdate,
+    CredentialTest,
+    CredentialTypeList
 )
-from .users import (
-    User, UserShort, UserCreateItem, UserCreateResponseItem, UserUpdateRequest,
-    UsersList, UserRole
+from .executions import (
+    ExecutionStatus,
+    ExecutionData,
+    DataItem,
+    BinaryDataItem,
+    Execution,
+    ExecutionShort,
+    ExecutionList,
+    ExecutionCreate,
+    ExecutionStopResult,
+    ExecutionRetryResult
 )
-from .variables import (
-    Variable, VariableCreate, VariablesList,
-    VariableType
-)
-from .source_control import (
-    ScmPullRequest, ScmPullResponse, ScmPullResponseVariables,
-    ScmPullResponseCredential, ScmPullResponseWorkflow, ScmPullResponseTagItem,
-    ScmPullResponseTagMapping, ScmPullResponseTags
-)
-from .audit import (
-    AuditAdditionalOptions, AuditReportLocationItem, AuditReportSection,
-    AuditRiskReport, AuditResponse
+from .nodes import (
+    NodeType,
+    NodePropertyType,
+    NodePropertyOptions,
+    NodeTypeDescription,
+    NodeParameterOption,
+    NodeParameterOptions,
+    NodeParameterValue,
+    NodeConnection,
+    NodeCreateResult,
+    NodeCreateError,
+    NodeTypeList,
+    NodeCreateOptions,
+    NodeConnectionOptions
 )
 from .projects import (
-    Project, ProjectCreate, ProjectUpdate, ProjectList
+    Project,
+    ProjectCreate,
+    ProjectUpdate,
+    ProjectList
+)
+from .source_control import (
+    ScmPullRequest,
+    ScmPullResponseVariables,
+    ScmPullResponseCredential,
+    ScmPullResponseWorkflow,
+    ScmPullResponseTagItem,
+    ScmPullResponseTagMapping,
+    ScmPullResponseTags,
+    ScmPullResponse,
+    ScmProvider,
+    ScmConnectionType,
+    PullRequestState,
+    ScmConnection,
+    ScmConnectionCreate,
+    ScmConnectionUpdate,
+    PullRequestStatus,
+    CommitInfo,
+    ScmStatus,
+    StatusItemType,
+    StatusItemStatus,
+    PullRequestCreate,
+    BranchCreate
+)
+from .users import (
+    UserRole,
+    AuthenticatedUser,
+    User,
+    UserShort,
+    UserCreate,
+    UserCreateItem,
+    UserCreateResponseItem,
+    UserUpdateRequest,
+    UsersList
+)
+from .variables import (
+    VariableType,
+    Variable,
+    VariableCreate,
+    VariableUpdate,
+    VariablesList
+)
+from .workflows import (
+    NodeParameter,
+    Connection,
+    NodeConnection,
+    NodeCredential,
+    Node,
+    WorkflowSettings,
+    Tag,
+    TagList,
+    WorkflowStaticData,
+    Workflow,
+    WorkflowShort,
+    WorkflowList,
+    WorkflowCreate,
+    WorkflowUpdate,
+    WorkflowTransferRequest,
+    WorkflowTagUpdateRequestItem,
+    WorkflowRunResult
 )
 
 __all__ = [
     'N8nBaseModel',
-    # Workflows
-    'Workflow', 'WorkflowShort', 'WorkflowCreate', 'WorkflowUpdate', 'WorkflowList',
-    'Tag', 'TagList', 'Connection', 'Node', 'NodeCredential', 'WorkflowSettings',
-    'WorkflowTransferRequest', 'WorkflowTagUpdateRequestItem',
-    # Executions
-    'Execution', 'ExecutionShort', 'ExecutionCreate', 'ExecutionStatus', 'ExecutionList',
-    'DataItem', 'BinaryDataItem',
-    # Nodes (節點類型)
-    'NodeType', 'NodeConnection', 'NodeParameterValue', 'NodeTypeDescription',
-    'NodeTypeList', 'NodeCreateResult', 'NodeCreateError', 'NodeParameterOption',
-    'NodeParameterOptions', 'NodePropertyType', 'NodePropertyOptions',
-    # Credentials
-    'Credential', 'CredentialShort', 'CredentialCreate',
-    'CredentialType', 'CredentialDataSchemaResponse', 'CredentialTransferRequest',
-    # Users
-    'User', 'UserShort', 'UserCreateItem', 'UserCreateResponseItem', 'UserUpdateRequest',
-    'UsersList', 'UserRole',
-    # Variables
-    'Variable', 'VariableCreate', 'VariablesList',
-    'VariableType',
-    # Source Control
-    'ScmPullRequest', 'ScmPullResponse', 'ScmPullResponseVariables',
-    'ScmPullResponseCredential', 'ScmPullResponseWorkflow', 'ScmPullResponseTagItem',
-    'ScmPullResponseTagMapping', 'ScmPullResponseTags',
-    # Audit
-    'AuditAdditionalOptions', 'AuditReportLocationItem', 'AuditReportSection',
-    'AuditRiskReport', 'AuditResponse',
-    # Projects
-    'Project', 'ProjectCreate', 'ProjectUpdate', 'ProjectList',
+    # audit
+    "AuditAdditionalOptions",
+    "AuditReportLocationItem",
+    "AuditReportSection",
+    "AuditRiskReport",
+    "AuditResponse",
+
+    # credentials
+    "CredentialType",
+    "CredentialDataSchemaResponse",
+    "CredentialTransferRequest",
+    "NodeAccess",
+    "CredentialTypeProperty",
+    "CredentialTypeDescription",
+    "CredentialData",
+    "CredentialListItem",
+    "CredentialDetail",
+    "CredentialTestResult",
+    "CredentialSharing",
+    "CredentialShort",
+    "Credential",
+    "CredentialCreate",
+    "CredentialUpdate",
+    "CredentialTest",
+    "CredentialTypeList",
+
+    # executions
+    "ExecutionStatus",
+    "ExecutionData",
+    "DataItem",
+    "BinaryDataItem",
+    "Execution",
+    "ExecutionShort",
+    "ExecutionList",
+    "ExecutionCreate",
+    "ExecutionStopResult",
+    "ExecutionRetryResult",
+
+    # nodes
+    "NodeType",
+    "NodePropertyType",
+    "NodePropertyOptions",
+    "NodeTypeDescription",
+    "NodeParameterOption",
+    "NodeParameterValue",
+    "NodeConnection",
+    "NodeCreateResult",
+    "NodeCreateError",
+    "NodeTypeList",
+    "NodeCreateOptions",
+    "NodeConnectionOptions",
+
+    # projects
+    "Project",
+    "ProjectCreate",
+    "ProjectUpdate",
+    "ProjectList",
+
+    # source control
+    "ScmPullRequest",
+    "ScmPullResponseVariables",
+    "ScmPullResponseCredential",
+    "ScmPullResponseWorkflow",
+    "ScmPullResponseTagItem",
+    "ScmPullResponseTagMapping",
+    "ScmPullResponseTags",
+    "ScmPullResponse",
+    "ScmProvider",
+    "ScmConnectionType",
+    "PullRequestState",
+    "ScmConnection",
+    "ScmConnectionCreate",
+    "ScmConnectionUpdate",
+    "PullRequestStatus",
+    "CommitInfo",
+    "ScmStatus",
+    "StatusItemType",
+    "StatusItemStatus",
+    "PullRequestCreate",
+    "BranchCreate",
+    
+    # users
+    "UserRole",
+    "AuthenticatedUser",
+    "User",
+    "UserShort",
+    "UserCreate",
+    "UserCreateItem",
+    "UserCreateResponseItem",
+    "UserUpdateRequest",
+    "UsersList",
+
+    # variables
+    "VariableType",
+    "Variable",
+    "VariableCreate",
+    "VariableUpdate",
+    "VariablesList",
+
+    # workflows
+    "NodeParameter",
+    "Connection",
+    "NodeConnection",
+    "NodeCredential",
+    "Node",
+    "WorkflowSettings",
+    "Tag",
+    "TagList",
+    "WorkflowStaticData",
+    "Workflow",
+    "WorkflowShort",
+    "WorkflowList",
+    "WorkflowCreate",
+    "WorkflowUpdate",
+    "WorkflowTransferRequest",
+    "WorkflowTagUpdateRequestItem",
+    "WorkflowRunResult",
+
 ] 

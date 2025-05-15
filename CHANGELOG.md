@@ -1,37 +1,48 @@
-# 更新日誌
+# Changelog
 
-本文檔記錄 n8n-sdk-python 所有版本的重要變更。
+This document records all notable changes to n8n-sdk-python.
 
-## [0.1.0] - 2025-01-01
+## [0.1.1] - 2025-05-16
 
-### 新增
-- 初始版本發布
-- 完整支援 n8n API v1.1.1
-- 實現了非同步客戶端架構
-- 支援所有主要 n8n 資源：工作流、執行、憑證、標籤、使用者、專案、變數等
-- 完善的錯誤處理機制
-- 詳細使用文檔和示例
+### Added
+- Added detailed descriptions and default values to all model fields.
 
-### 功能特點
-- 完整 API 覆蓋
-  - 用戶管理
-  - 工作流管理
-  - 執行管理
-  - 憑證管理
-  - 標籤管理
-  - 專案管理
-  - 變數管理
-  - 版本控制整合
-  - 安全審計功能
-- 非同步操作支援
-- 強型別系統
-- 詳細日誌記錄
-- 自定義錯誤處理
-- 環境變數配置支援
+### Changed
+- Replaced `loguru` with standard Python `logging` module.
 
-### 計劃功能
-- 實現批量操作功能
-- 增加單元測試覆蓋率
-- 新增快取機制
-- 工作流執行結果監控
-- 實現事件訂閱機制 
+### Styling
+- Minor code adjustments for PEP8 compliance.
+
+## [0.1.0] - 2025-05-14
+
+### Added
+- Initial release
+- Full support for n8n API v1.1.1
+- Implemented asynchronous client architecture
+- Support for all major n8n resources: workflows, executions, credentials, tags, users, projects, variables, etc.
+- Comprehensive error handling mechanism
+- Detailed documentation and examples
+
+### Features
+- Complete API Coverage
+  - User Management
+  - Workflow Management
+  - Execution Management
+  - Credential Management
+  - Tag Management
+  - Project Management
+  - Variable Management
+  - Source Control Integration
+  - Security Audit Features
+- Asynchronous Operations Support
+- Strong Typing System
+- Detailed Logging
+- Custom Error Handling
+- Environment Variable Configuration Support
+
+### Planned Features
+- Implement bulk operations
+- Increase unit test coverage
+- Add caching mechanism
+- Workflow execution result monitoring
+- Implement event subscription mechanism 

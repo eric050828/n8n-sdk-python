@@ -1,28 +1,31 @@
 """
-n8n 節點資料模型。
-定義節點相關的資料結構。
+n8n nodes data models.
+Define node-related data structures.
 """
 
-from pydantic import Field, validator
-from typing import Any, Optional, Union
-from .base import N8nBaseModel
 from enum import Enum
+from typing import Any, Optional
+
+from pydantic import Field, validator
+
+from .base import N8nBaseModel
+
 
 class NodeType(N8nBaseModel):
-    """節點類型基本信息"""
-    name: str = Field(..., description="節點類型名稱")
-    displayName: str = Field(..., description="顯示名稱")
-    icon: Optional[str] = Field(None, description="圖標")
-    description: Optional[str] = Field(None, description="描述")
-    version: int = Field(1, description="版本")
-    group: list[str] = Field(default_factory=list, description="分組")
-    codex: Optional[dict[str, Any]] = Field(None, description="Codex 信息")
-    defaults: Optional[dict[str, Any]] = Field(None, description="默認值")
-    sourcePath: Optional[str] = Field(None, description="源碼路徑")
-    supportsCommunityNodes: Optional[bool] = Field(None, description="是否支援社群節點")
+    """Node type basic information"""
+    name: str = Field(..., description="Node type name")
+    displayName: str = Field(..., description="Display name")
+    icon: Optional[str] = Field(None, description="Icon")
+    description: Optional[str] = Field(None, description="Description")
+    version: int = Field(1, description="Version")
+    group: list[str] = Field(default_factory=list, description="Group")
+    codex: Optional[dict[str, Any]] = Field(None, description="Codex information")
+    defaults: Optional[dict[str, Any]] = Field(None, description="Default values")
+    sourcePath: Optional[str] = Field(None, description="Source code path")
+    supportsCommunityNodes: Optional[bool] = Field(None, description="Whether it supports community nodes")
 
 class NodePropertyType(str, Enum):
-    """節點屬性類型枚舉"""
+    """Node property type enum"""
     STRING = "string"
     NUMBER = "number"
     BOOLEAN = "boolean"
@@ -39,92 +42,92 @@ class NodePropertyType(str, Enum):
     RESOURCE_MAPPER = "resourceMapper"
 
 class NodePropertyOptions(N8nBaseModel):
-    """節點屬性選項"""
-    name: str = Field(..., description="選項名稱")
-    displayName: str = Field(..., description="顯示名稱")
-    description: Optional[str] = Field(None, description="描述")
-    type: NodePropertyType = Field(..., description="屬性類型")
-    default: Optional[Any] = Field(None, description="默認值")
-    required: Optional[bool] = Field(False, description="是否必填")
-    displayOptions: Optional[dict[str, Any]] = Field(None, description="顯示選項")
-    options: Optional[list[dict[str, Any]]] = Field(None, description="選項列表")
-    placeholder: Optional[str] = Field(None, description="佔位符")
-    typeOptions: Optional[dict[str, Any]] = Field(None, description="類型選項")
+    """Node property options"""
+    name: str = Field(..., description="Option name")
+    displayName: str = Field(..., description="Display name")
+    description: Optional[str] = Field(None, description="Description")
+    type: NodePropertyType = Field(..., description="Property type")
+    default: Optional[Any] = Field(None, description="Default value")
+    required: Optional[bool] = Field(False, description="Whether required")
+    displayOptions: Optional[dict[str, Any]] = Field(None, description="Display options")
+    options: Optional[list[dict[str, Any]]] = Field(None, description="Options list")
+    placeholder: Optional[str] = Field(None, description="Placeholder")
+    typeOptions: Optional[dict[str, Any]] = Field(None, description="Type options")
 
 class NodeTypeDescription(N8nBaseModel):
-    """節點類型詳細描述"""
-    displayName: str = Field(..., description="顯示名稱")
-    name: str = Field(..., description="節點類型名稱")
-    group: list[str] = Field(default_factory=list, description="節點分組")
-    description: Optional[str] = Field(None, description="節點描述")
-    version: int = Field(1, description="節點版本")
-    defaults: Optional[dict[str, Any]] = Field(None, description="默認值")
-    inputs: Optional[list[str]] = Field(None, description="輸入")
-    outputs: Optional[list[str]] = Field(None, description="輸出")
-    properties: list[NodePropertyOptions] = Field(default_factory=list, description="節點屬性")
-    credentials: Optional[list[dict[str, Any]]] = Field(None, description="節點憑證")
-    icon: Optional[str] = Field(None, description="圖標")
-    subtitle: Optional[str] = Field(None, description="子標題")
-    maxNodes: Optional[int] = Field(None, description="最大節點數量")
-    documentationUrl: Optional[str] = Field(None, description="文檔URL")
-    codex: Optional[dict[str, Any]] = Field(None, description="Codex 信息")
-    sourcePath: Optional[str] = Field(None, description="源碼路徑")
-    supportsCommunityNodes: Optional[bool] = Field(None, description="是否支援社群節點")
+    """Node type detailed description"""
+    displayName: str = Field(..., description="Display name")
+    name: str = Field(..., description="Node type name")
+    group: list[str] = Field(default_factory=list, description="Node group")
+    description: Optional[str] = Field(None, description="Node description")
+    version: int = Field(1, description="Node version")
+    defaults: Optional[dict[str, Any]] = Field(None, description="Default values")
+    inputs: Optional[list[str]] = Field(None, description="Inputs")
+    outputs: Optional[list[str]] = Field(None, description="Outputs")
+    properties: list[NodePropertyOptions] = Field(default_factory=list, description="Node properties")
+    credentials: Optional[list[dict[str, Any]]] = Field(None, description="Node credentials")
+    icon: Optional[str] = Field(None, description="Icon")
+    subtitle: Optional[str] = Field(None, description="Subtitle")
+    maxNodes: Optional[int] = Field(None, description="Maximum number of nodes")
+    documentationUrl: Optional[str] = Field(None, description="Documentation URL")
+    codex: Optional[dict[str, Any]] = Field(None, description="Codex information")
+    sourcePath: Optional[str] = Field(None, description="Source code path")
+    supportsCommunityNodes: Optional[bool] = Field(None, description="Whether it supports community nodes")
 
 class NodeParameterOption(N8nBaseModel):
-    """節點參數選項"""
-    name: str = Field(..., description="選項名稱")
-    value: Any = Field(..., description="選項值")
-    description: Optional[str] = Field(None, description="選項描述")
-    action: Optional[str] = Field(None, description="選項動作")
-    routing: Optional[dict[str, Any]] = Field(None, description="路由設定")
+    """Node parameter option"""
+    name: str = Field(..., description="Option name")
+    value: Any = Field(..., description="Option value")
+    description: Optional[str] = Field(None, description="Option description")
+    action: Optional[str] = Field(None, description="Option action")
+    routing: Optional[dict[str, Any]] = Field(None, description="Routing configuration")
 
 class NodeParameterOptions(N8nBaseModel):
-    """節點參數可選值"""
-    resourceName: Optional[str] = Field(None, description="資源名稱")
-    resourceVersion: Optional[str] = Field(None, description="資源版本")
-    operation: Optional[str] = Field(None, description="操作名稱")
-    properties: dict[str, Any] = Field(default_factory=dict, description="屬性")
-    options: list[NodeParameterOption] = Field(default_factory=list, description="選項列表")
+    """Node parameter optional values"""
+    resourceName: Optional[str] = Field(None, description="Resource name")
+    resourceVersion: Optional[str] = Field(None, description="Resource version")
+    operation: Optional[str] = Field(None, description="Operation name")
+    properties: dict[str, Any] = Field(default_factory=dict, description="Properties")
+    options: list[NodeParameterOption] = Field(default_factory=list, description="Options list")
 
 class NodeParameterValue(N8nBaseModel):
-    """節點參數值"""
-    value: Any = Field(..., description="參數值")
-    routing: Optional[dict[str, Any]] = Field(None, description="路由設定")
+    """Node parameter value"""
+    value: Any = Field(..., description="Parameter value")
+    routing: Optional[dict[str, Any]] = Field(None, description="Routing configuration")
 
 class NodeConnection(N8nBaseModel):
-    """節點連接設定"""
-    main: Optional[list[list[dict[str, Any]]]] = Field(None, description="主要連接")
-    other: Optional[dict[str, list[dict[str, Any]]]] = Field(None, description="其他連接")
+    """Node connection configuration"""
+    main: Optional[list[list[dict[str, Any]]]] = Field(None, description="Main connections")
+    other: Optional[dict[str, list[dict[str, Any]]]] = Field(None, description="Other connections")
 
 class NodeCreateResult(N8nBaseModel):
-    """建立節點結果"""
-    id: str = Field(..., description="節點 ID")
-    name: str = Field(..., description="節點名稱")
-    type: str = Field(..., description="節點類型")
-    parameters: dict[str, Any] = Field(default_factory=dict, description="節點參數")
-    position: dict[str, float] = Field(..., description="節點位置")
-    typeVersion: int = Field(1, description="類型版本")
+    """Create node result"""
+    id: str = Field(..., description="Node ID")
+    name: str = Field(..., description="Node name")
+    type: str = Field(..., description="Node type")
+    parameters: dict[str, Any] = Field(default_factory=dict, description="Node parameters")
+    position: dict[str, float] = Field(..., description="Node position")
+    typeVersion: int = Field(1, description="Type version")
 
 class NodeCreateError(N8nBaseModel):
-    """建立節點錯誤"""
-    message: str = Field(..., description="錯誤訊息")
-    code: str = Field(..., description="錯誤代碼")
+    """Create node error"""
+    message: str = Field(..., description="Error message")
+    code: str = Field(..., description="Error code")
 
 class NodeTypeList(N8nBaseModel):
-    """節點類型列表"""
-    creatorNodes: Optional[list[str]] = Field(None, description="創建者節點")
-    nodes: dict[str, NodeTypeDescription] = Field(..., description="節點類型字典")
-    count: Optional[int] = Field(None, description="總數")
-    nextCursor: Optional[str] = Field(None, description="下一頁游標")
+    """Node type list"""
+    creatorNodes: Optional[list[str]] = Field(None, description="Creator nodes")
+    nodes: dict[str, NodeTypeDescription] = Field(..., description="Node type dictionary")
+    count: Optional[int] = Field(None, description="Total count")
+    nextCursor: Optional[str] = Field(None, description="Next page cursor")
 
 class NodeCreateOptions(N8nBaseModel):
-    """節點選項查詢結果"""
-    options: dict[str, Any] = Field(..., description="節點選項")
+    """Node options query result"""
+    options: dict[str, Any] = Field(..., description="Node options")
 
 class NodeConnectionOptions(N8nBaseModel):
-    """節點連接選項"""
-    sourceNode: str = Field(..., description="源節點 ID")
-    sourceNodeOutput: Optional[str] = Field(None, description="源節點輸出")
-    targetNode: str = Field(..., description="目標節點 ID")
-    targetNodeInput: Optional[str] = Field(None, description="目標節點輸入") 
+    """Node connection options"""
+    sourceNode: str = Field(..., description="Source node ID")
+    sourceNodeOutput: Optional[str] = Field(None, description="Source node output")
+    targetNode: str = Field(..., description="Target node ID")
+    targetNodeInput: Optional[str] = Field(None, description="Target node input") 

@@ -9,9 +9,8 @@ from typing import Any, Optional
 from ..client.base import BaseClient
 from ..utils.logger import log
 from ..models.workflows import Workflow, Connection # Connection model is used in methods
-# from .workflows import WorkflowsClient # This will be handled by property getter to avoid circular import at module level
 
-# Modify class definition to inherit from BaseClient
+
 class ConnectionsClient(BaseClient):
     """
     n8n 節點連接 API 客戶端類。

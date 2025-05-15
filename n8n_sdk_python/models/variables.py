@@ -1,51 +1,64 @@
 """
-n8n 變數資料模型。
-定義工作流程變數相關的資料結構。
+n8n variables data models.
+Define workflow variables related data structures.
 """
 
-from typing import Optional, Any, Union
 from enum import Enum
 from datetime import datetime
+from typing import Optional, Any
+
 from pydantic import Field
 
 from .base import N8nBaseModel
 
 
 class VariableType(str, Enum):
-    """變數類型枚舉"""
-    STRING = "string"
-    NUMBER = "number"
-    BOOLEAN = "boolean"
-    JSON = "json"
+    """Variable type enum, defines the variable data types supported by the system"""
+    STRING = "string"  # String type, the most commonly used variable type
+    NUMBER = "number"  # Number type, used for numerical calculations
+    BOOLEAN = "boolean"  # Boolean type, represents true/false values
+    JSON = "json"  # JSON type, used for complex data structures
 
 
 class Variable(N8nBaseModel):
-    """變數資料模型"""
-    id: str
-    key: str
-    value: Any
-    type: Optional[VariableType] = Field(default=VariableType.STRING, description="變數類型")
-    description: Optional[str] = None
-    createdAt: Optional[datetime] = None
-    updatedAt: Optional[datetime] = None
+    """Variable data model, represents an environment variable in the system
+    
+    Corresponds to the response data item of GET /variables
+    """
+    id: str = Field(..., description="Unique identifier of the variable")
+    key: str = Field(..., description="Variable key name, used in workflows")
+    value: Any = Field(..., description="Variable value, can be any type depending on 'type'")
+    type: Optional[VariableType] = Field(VariableType.STRING, description="Variable data type, default is string")
+    description: Optional[str] = Field(None, description="Variable description, helps understand the variable's purpose")
+    createdAt: Optional[datetime] = Field(None, description="Variable creation time")
+    updatedAt: Optional[datetime] = Field(None, description="Variable last update time")
 
 
 class VariableCreate(N8nBaseModel):
-    """建立變數請求模型"""
-    key: str = Field(..., description="變數的鍵")
-    value: str = Field(..., description="變數的值 (API 文件指定為 string)")
+    """Create variable request model
+    
+    Corresponds to the request body of POST /variables
+    """
+    key: str = Field(..., description="Variable key name, must be unique, used for reference in workflows")
+    value: str = Field(..., description="Initial value of the variable, API requires string type")
 
 
 class VariableUpdate(N8nBaseModel):
-    """更新變數請求模型"""
-    key: Optional[str] = None
-    value: Optional[Any] = None
-    type: Optional[VariableType] = None
-    description: Optional[str] = None
+    """Update variable request model
+    
+    Corresponds to the request body of variable update API (although not explicitly defined in API docs)
+    """
+    key: Optional[str] = Field(None, description="New key name for the variable")
+    value: Optional[Any] = Field(None, description="New value for the variable")
+    type: Optional[VariableType] = Field(None, description="New type for the variable")
+    description: Optional[str] = Field(None, description="New description for the variable")
 
 
 class VariablesList(N8nBaseModel):
-    """變數列表響應模型"""
-    data: list[Variable]
-    nextCursor: Optional[str] = None
-    count: Optional[int] = None 
+    """Variables list response model
+    
+    Corresponds to the complete response of GET /variables
+    """
+    data: list[Variable] = Field(..., description="List of variables")
+    nextCursor: Optional[str] = Field(None, description="Pagination cursor, used to get the next page of data")
+    count: Optional[int] = Field(None, description="Total number of variables") 

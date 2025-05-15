@@ -2,10 +2,12 @@
 n8n Projects API Client.
 """
 
-from typing import Optional, Dict, Any, List
+from typing import Optional, Any
+
 from ..client.base import BaseClient
 from ..models.projects import Project, ProjectList, ProjectCreate, ProjectUpdate # ProjectUpdate is also needed
 from ..models.base import N8nBaseModel # For generic 204 response
+
 
 class ProjectClient(BaseClient):
     """
@@ -37,7 +39,7 @@ class ProjectClient(BaseClient):
         Retrieve projects from your instance.
         API Docs: https://docs.n8n.io/api/v1/projects/#retrieve-projects
         """
-        params: Dict[str, Any] = {}
+        params: dict[str, Any] = {}
         if limit is not None:
             params["limit"] = limit
         if cursor is not None:

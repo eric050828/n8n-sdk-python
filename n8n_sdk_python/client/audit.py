@@ -2,9 +2,11 @@
 n8n Audit API Client.
 """
 
-from typing import Optional, Dict, Any
+from typing import Optional, Any
+
 from ..client.base import BaseClient
 from ..models.audit import AuditAdditionalOptions, AuditResponse
+
 
 class AuditClient(BaseClient):
     """
@@ -16,7 +18,7 @@ class AuditClient(BaseClient):
 
     async def generate_audit_report(
         self,
-        options: Optional[AuditAdditionalOptions | Dict[str, Any]] = None
+        options: Optional[AuditAdditionalOptions | dict[str, Any]] = None
     ) -> AuditResponse:
         """
         Generate a security audit for your n8n instance.
@@ -34,7 +36,7 @@ class AuditClient(BaseClient):
                     f"got {type(options).__name__}"
                 )
 
-        payload: Optional[Dict[str, Any]] = None
+        payload: Optional[dict[str, Any]] = None
         if _options:
             # The N8N-API.md example payload is: { "additionalOptions": { "daysAbandonedWorkflow": 0, ... } }
             # So we need to wrap the options model.

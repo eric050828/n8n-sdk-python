@@ -3,9 +3,11 @@ n8n Variables API Client.
 """
 
 from typing import Optional, Any
+
 from ..client.base import BaseClient
 from ..models.variables import Variable, VariablesList, VariableCreate
 from ..models.base import N8nBaseModel # For generic 204 response
+
 
 class VariableClient(BaseClient):
     """

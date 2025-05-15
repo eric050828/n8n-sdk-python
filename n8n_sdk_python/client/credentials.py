@@ -4,6 +4,7 @@ n8n Credential API Client.
 
 from typing import Any, Optional
 from pydantic import ValidationError
+
 from ..client.base import BaseClient
 from ..models.credentials import (
     CredentialListItem,
@@ -16,8 +17,8 @@ from ..models.credentials import (
     CredentialCreate
 )
 from ..models.base import N8nBaseModel
-
 from ..utils.logger import log
+
 
 class CredentialClient(BaseClient):
     """

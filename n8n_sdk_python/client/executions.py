@@ -2,11 +2,13 @@
 n8n Execution API Client.
 """
 
-from typing import Optional, Union, Any
+from typing import Optional, Any
+
 from ..client.base import BaseClient
 from ..models.executions import (
     ExecutionList, Execution, ExecutionStatus
 )
+
 
 class ExecutionClient(BaseClient):
     """

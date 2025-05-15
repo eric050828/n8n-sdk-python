@@ -2,7 +2,8 @@
 n8n User API Client.
 """
 
-from typing import List, Optional, Dict, Any
+from typing import Optional, Any
+
 from ..client.base import BaseClient
 from ..models.users import (
     UsersList, UserCreateItem, UserCreateResponseItem, User, UserRole
@@ -44,13 +45,13 @@ class UserClient(BaseClient):
 
     async def create_users(
         self,
-        users: List[UserCreateItem | Dict[str, Any]]
-    ) -> List[UserCreateResponseItem]:
+        users: list[UserCreateItem | dict[str, Any]]
+    ) -> list[UserCreateResponseItem]:
         """
         Create one or more users.
         API Docs: https://docs.n8n.io/api/v1/users/#create-multiple-users
         """
-        _users: List[UserCreateItem] = []
+        _users: list[UserCreateItem] = []
         for user_input_item in users:
             if isinstance(user_input_item, dict):
                 _users.append(UserCreateItem(**user_input_item))
@@ -62,7 +63,7 @@ class UserClient(BaseClient):
                     f"got {type(user_input_item).__name__} for item {user_input_item!r}"
                 )
         
-        # Convert List[UserCreateItem] to List[Dict] for the JSON body
+        # Convert list[UserCreateItem] to list[Dict] for the JSON body
         users_payload = [user.model_dump(exclude_none=True) for user in _users]
         response_data = await self.post(endpoint="/v1/users", json=users_payload)
         # Assuming the response is a list of dictionaries, each can be parsed into UserCreateResponseItem

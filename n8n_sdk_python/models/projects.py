@@ -1,30 +1,33 @@
 """
-n8n 專案資料模型。
-定義專案相關的資料結構。
+n8n projects data models.
+Define project-related data structures.
 """
 
-from typing import Optional, Any, Dict
+from datetime import datetime
+from typing import Optional
+
 from pydantic import Field
-from datetime import datetime # 雖然 API 文件範例未顯示時間戳，但通常會有
+
 from .base import N8nBaseModel
 
+
 class Project(N8nBaseModel):
-    """專案資料模型"""
+    """Project data model"""
     id: str
     name: str
-    type: Optional[str] = Field(None, description="專案類型，API 文件範例中有此欄位，但未詳述") # GET /projects 回應範例中有 type
-    createdAt: Optional[datetime] = Field(None, description="創建時間 (推測)")
-    updatedAt: Optional[datetime] = Field(None, description="更新時間 (推測)")
+    type: Optional[str] = Field(None, description="Project type, this field exists in API examples but is not detailed") # Field present in GET /projects response examples
+    createdAt: Optional[datetime] = Field(None, description="Creation time (inferred)")
+    updatedAt: Optional[datetime] = Field(None, description="Update time (inferred)")
 
 class ProjectCreate(N8nBaseModel):
-    """建立專案請求模型 (POST /projects)"""
+    """Create project request model (POST /projects)"""
     name: str
 
 class ProjectUpdate(N8nBaseModel):
-    """更新專案請求模型 (PUT /projects/{projectId})"""
+    """Update project request model (PUT /projects/{projectId})"""
     name: str
 
 class ProjectList(N8nBaseModel):
-    """專案列表響應模型 (GET /projects)"""
+    """Project list response model (GET /projects)"""
     data: list[Project]
     nextCursor: Optional[str] = None

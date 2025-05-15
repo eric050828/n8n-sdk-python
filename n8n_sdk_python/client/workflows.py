@@ -2,7 +2,8 @@
 n8n Workflow API Client.
 """
 
-from typing import Optional, Dict, Any, List
+from typing import Optional, Any
+
 from ..client.base import BaseClient
 from ..models.workflows import (
     Workflow, WorkflowList, WorkflowCreate, WorkflowUpdate, Tag, WorkflowTagUpdateRequestItem,
@@ -10,6 +11,7 @@ from ..models.workflows import (
 )
 from ..models.base import N8nBaseModel # For generic responses
 from ..utils.logger import log # Import logger
+
 
 class WorkflowClient(BaseClient):
     """
@@ -22,16 +24,16 @@ class WorkflowClient(BaseClient):
     async def create_workflow(
         self,
         name: str,
-        nodes: List[Node | Dict[str, Any]],
-        connections: Dict[str, Dict[str, List[Connection]]] | Dict[str, Any], # Placeholder for now, complex conversion needed
-        settings: Optional[WorkflowSettings | Dict[str, Any]] = None,
-        static_data: Optional[WorkflowStaticData | Dict[str, int]] = None # Assuming WorkflowStaticData model
+        nodes: list[Node | dict[str, Any]],
+        connections: dict[str, dict[str, list[Connection]]] | dict[str, Any], # Placeholder for now, complex conversion needed
+        settings: Optional[WorkflowSettings | dict[str, Any]] = None,
+        static_data: Optional[WorkflowStaticData | dict[str, int]] = None # Assuming WorkflowStaticData model
     ) -> Workflow:
         """
         Create a workflow in your instance.
         API Docs: https://docs.n8n.io/api/v1/workflows/#create-a-workflow
         """
-        _nodes: List[Node] = []
+        _nodes: list[Node] = []
         for node_input in nodes:
             if isinstance(node_input, dict):
                 _nodes.append(Node(**node_input))
@@ -59,11 +61,11 @@ class WorkflowClient(BaseClient):
                 # Assuming str is not a valid type if model is WorkflowStaticData based on previous analysis
                 raise TypeError(f"Parameter 'static_data' must be a WorkflowStaticData instance or a dict, got {type(static_data).__name__}")
         
-        # TODO: Deep conversion for connections if it's a Dict[str, Any]
-        # For now, assuming if connections is Dict[str, Any], it matches the structure Pydantic can parse
+        # TODO: Deep conversion for connections if it's a dict[str, Any]
+        # For now, assuming if connections is dict[str, Any], it matches the structure Pydantic can parse
         # or it's already the correct ConnectionsDict type.
         # A proper conversion would iterate through the structure and convert Connection dicts.
-        _connections = connections # Needs more robust handling if type is Dict[str, Any]
+        _connections = connections # Needs more robust handling if type is dict[str, Any]
 
         payload_model = WorkflowCreate(
             name=name,
@@ -93,7 +95,7 @@ class WorkflowClient(BaseClient):
         Retrieve all workflows from your instance.
         API Docs: https://docs.n8n.io/api/v1/workflows/#retrieve-all-workflows
         """
-        params: Dict[str, Any] = {}
+        params: dict[str, Any] = {}
         if active is not None:
             params["active"] = active
         if tags is not None:
@@ -121,7 +123,7 @@ class WorkflowClient(BaseClient):
         Retrieves a workflow.
         API Docs: https://docs.n8n.io/api/v1/workflows/#retrieves-a-workflow
         """
-        params: Dict[str, Any] = {}
+        params: dict[str, Any] = {}
         if exclude_pinned_data is not None:
             params["excludePinnedData"] = exclude_pinned_data
             
@@ -143,16 +145,16 @@ class WorkflowClient(BaseClient):
         self,
         workflow_id: str,
         name: str, 
-        nodes: List[Node | Dict[str, Any]],
-        connections: Dict[str, Dict[str, List[Connection]]] | Dict[str, Any], # Placeholder for now
-        settings: WorkflowSettings | Dict[str, Any],
-        static_data: Optional[WorkflowStaticData | Dict[str, Any]] = None # Assuming WorkflowStaticData
+        nodes: list[Node | dict[str, Any]],
+        connections: dict[str, dict[str, list[Connection]]] | dict[str, Any], # Placeholder for now
+        settings: WorkflowSettings | dict[str, Any],
+        static_data: Optional[WorkflowStaticData | dict[str, Any]] = None # Assuming WorkflowStaticData
     ) -> Workflow:
         """
         Update a workflow.
         API Docs: https://docs.n8n.io/api/v1/workflows/#update-a-workflow
         """
-        processed_nodes: List[Node] = []
+        processed_nodes: list[Node] = []
         if nodes:
             for node_input in nodes:
                 if isinstance(node_input, dict):
@@ -232,7 +234,7 @@ class WorkflowClient(BaseClient):
     async def get_workflow_tags(
         self,
         workflow_id: str
-    ) -> List[Tag]:
+    ) -> list[Tag]:
         """
         Get workflow tags.
         API Docs: https://docs.n8n.io/api/v1/workflows/#get-workflow-tags
@@ -243,13 +245,13 @@ class WorkflowClient(BaseClient):
     async def update_workflow_tags(
         self,
         workflow_id: str,
-        tags: List[WorkflowTagUpdateRequestItem | Dict[str, Any]] 
-    ) -> List[Tag]:
+        tags: list[WorkflowTagUpdateRequestItem | dict[str, Any]] 
+    ) -> list[Tag]:
         """
         Update tags of a workflow.
         API Docs: https://docs.n8n.io/api/v1/workflows/#update-tags-of-a-workflow
         """
-        processed_tags: List[WorkflowTagUpdateRequestItem] = []
+        processed_tags: list[WorkflowTagUpdateRequestItem] = []
         if tags:
             for tag_input in tags:
                 if isinstance(tag_input, dict):

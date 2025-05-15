@@ -1,201 +1,203 @@
 """
-n8n 源碼控制資料模型。
-定義源碼控制相關的資料結構。
+n8n source control data models.
+Define source control related data structures.
 """
 
-from typing import Optional, Any, Union
 from enum import Enum
 from datetime import datetime
+from typing import Optional, Any
+
 from pydantic import Field
 
 from .base import N8nBaseModel
 
 
 class ScmPullRequest(N8nBaseModel):
-    """源碼控制拉取請求模型 (POST /source-control/pull 的請求體)"""
-    force: Optional[bool] = Field(None, description="是否強制拉取")
-    variables: Optional[dict[str, Any]] = Field(None, description="在拉取期間應用的變量")
+    """Source control pull request model
+    
+    Corresponds to the request body of POST /source-control/pull, used to pull data from remote repository
+    """
+    force: Optional[bool] = Field(False, description="Whether to force pull, force mode will ignore local modifications")
+    variables: Optional[dict[str, Any]] = Field(None, description="Environment variables to apply during pull operation, can be used to resolve conflicts")
 
 
 class ScmPullResponseVariables(N8nBaseModel):
-    """源碼控制拉取響應中的變量變更"""
-    added: Optional[list[str]] = Field(default_factory=list)
-    changed: Optional[list[str]] = Field(default_factory=list)
+    """Variables changes in source control pull response, records variable changes during pull operation"""
+    added: Optional[list[str]] = Field(default_factory=list, description="List of variable key names added during pull operation")
+    changed: Optional[list[str]] = Field(default_factory=list, description="List of variable key names modified during pull operation")
 
 
 class ScmPullResponseCredential(N8nBaseModel):
-    """源碼控制拉取響應中的憑證簡要信息"""
-    id: str
-    name: str
-    type: str
+    """Credential brief information in source control pull response, represents credentials affected by pull operation"""
+    id: str = Field(..., description="Unique identifier of the credential")
+    name: str = Field(..., description="Name of the credential")
+    type: str = Field(..., description="Type of the credential, such as 'github', 'slack', etc.")
 
 
 class ScmPullResponseWorkflow(N8nBaseModel):
-    """源碼控制拉取響應中的工作流程簡要信息"""
-    id: str
-    name: str
+    """Workflow brief information in source control pull response, represents workflows affected by pull operation"""
+    id: str = Field(..., description="Unique identifier of the workflow")
+    name: str = Field(..., description="Name of the workflow")
 
 
 class ScmPullResponseTagItem(N8nBaseModel):
-    """源碼控制拉取響應中的標籤項"""
-    id: str
-    name: str
+    """Tag item in source control pull response, represents tag information in pull operation"""
+    id: str = Field(..., description="Unique identifier of the tag")
+    name: str = Field(..., description="Name of the tag")
 
 
 class ScmPullResponseTagMapping(N8nBaseModel):
-    """源碼控制拉取響應中的標籤映射"""
-    workflowId: str
-    tagId: str
+    """Tag mapping in source control pull response, represents association between workflows and tags"""
+    workflowId: str = Field(..., description="Unique identifier of the workflow")
+    tagId: str = Field(..., description="Unique identifier of the tag")
 
 
 class ScmPullResponseTags(N8nBaseModel):
-    """源碼控制拉取響應中的標籤變更"""
-    tags: Optional[list[ScmPullResponseTagItem]] = Field(default_factory=list)
-    mappings: Optional[list[ScmPullResponseTagMapping]] = Field(default_factory=list)
+    """Tag changes in source control pull response, records changes to tags and tag mappings"""
+    tags: Optional[list[ScmPullResponseTagItem]] = Field(default_factory=list, description="List of tags in pull operation")
+    mappings: Optional[list[ScmPullResponseTagMapping]] = Field(default_factory=list, description="List of tag mappings in pull operation")
 
 
 class ScmPullResponse(N8nBaseModel):
-    """源碼控制拉取響應模型 (POST /source-control/pull 的響應體)"""
-    variables: Optional[ScmPullResponseVariables] = None
-    credentials: Optional[list[ScmPullResponseCredential]] = Field(default_factory=list)
-    workflows: Optional[list[ScmPullResponseWorkflow]] = Field(default_factory=list)
-    tags: Optional[ScmPullResponseTags] = None
-
-# ScmConnection, ScmConnectionCreate, ScmConnectionUpdate 等模型
-# 在 N8N-API.md 中沒有找到對應的 /source-control/connections (或類似) 端點來管理連接本身。
-# 只有 /source-control/pull 端點。因此，這些連接管理相關的模型可能來自舊版或企業版特定功能。
-# 暫時註解，以嚴格對應提供的 API 文件。
+    """Source control pull response model
+    
+    Corresponds to the response body of POST /source-control/pull, contains details of pull operation results
+    """
+    variables: Optional[ScmPullResponseVariables] = Field(None, description="Variable change information")
+    credentials: Optional[list[ScmPullResponseCredential]] = Field(default_factory=list, description="List of credentials affected by pull operation")
+    workflows: Optional[list[ScmPullResponseWorkflow]] = Field(default_factory=list, description="List of workflows affected by pull operation")
+    tags: Optional[ScmPullResponseTags] = Field(None, description="Changes to tags and tag mappings")
 
 class ScmProvider(str, Enum):
-    """源碼控制提供者枚舉"""
-    GITHUB = "github"
-    GITLAB = "gitlab"
-    BITBUCKET = "bitbucket"
-    GITEA = "gitea"
-    CUSTOM = "custom"
+    """Source control provider enum, defines supported source code management systems"""
+    GITHUB = "github"  # GitHub repository
+    GITLAB = "gitlab"  # GitLab repository
+    BITBUCKET = "bitbucket"  # Bitbucket repository
+    GITEA = "gitea"  # Gitea self-hosted Git service
+    CUSTOM = "custom"  # Custom Git service
 
 
 class ScmConnectionType(str, Enum):
-    """源碼控制連接類型枚舉"""
-    OAUTH2 = "oauth2"
-    PERSONAL_ACCESS_TOKEN = "personalAccessToken"
-    BASIC_AUTH = "basicAuth"
-    SSH_KEY = "sshKey"
+    """Source control connection type enum, defines methods of authentication to source code repositories"""
+    OAUTH2 = "oauth2"  # OAuth2 authentication
+    PERSONAL_ACCESS_TOKEN = "personalAccessToken"  # Personal access token
+    BASIC_AUTH = "basicAuth"  # Basic authentication (username/password)
+    SSH_KEY = "sshKey"  # SSH key authentication
 
 
 class PullRequestState(str, Enum):
-    """拉取請求狀態枚舉"""
-    OPEN = "open"
-    CLOSED = "closed"
-    MERGED = "merged"
+    """Pull request state enum, defines possible states of a PR"""
+    OPEN = "open"  # Open/unresolved
+    CLOSED = "closed"  # Closed/rejected
+    MERGED = "merged"  # Merged
 
 
 class ScmConnection(N8nBaseModel):
-    """源碼控制連接資料模型"""
-    id: str
-    name: str
-    provider: ScmProvider
-    repositoryUrl: str
-    branchName: str
-    connectionType: ScmConnectionType
-    connected: bool
-    settings: Optional[dict[str, Any]] = None
-    createdAt: Optional[datetime] = None
-    updatedAt: Optional[datetime] = None
+    """Source control connection data model, represents a connection configuration to a source code repository"""
+    id: str = Field(..., description="Unique identifier of the connection")
+    name: str = Field(..., description="Display name of the connection")
+    provider: ScmProvider = Field(..., description="Source code provider type")
+    repositoryUrl: str = Field(..., description="Repository URL")
+    branchName: str = Field(..., description="Branch name to use")
+    connectionType: ScmConnectionType = Field(..., description="Connection authentication type")
+    connected: bool = Field(False, description="Whether the connection is active")
+    settings: Optional[dict[str, Any]] = Field(None, description="Additional settings for the connection, such as authentication information")
+    createdAt: Optional[datetime] = Field(None, description="Connection creation time")
+    updatedAt: Optional[datetime] = Field(None, description="Connection last update time")
 
 
 class ScmConnectionCreate(N8nBaseModel):
-    """建立源碼控制連接請求模型"""
-    name: str
-    provider: ScmProvider
-    repositoryUrl: str
-    branchName: Optional[str] = "main"
-    connectionType: ScmConnectionType
-    settings: Optional[dict[str, Any]] = None
+    """Create source control connection request model, used to create a new source code connection"""
+    name: str = Field(..., description="Display name of the connection")
+    provider: ScmProvider = Field(..., description="Source code provider type")
+    repositoryUrl: str = Field(..., description="Repository URL")
+    branchName: Optional[str] = Field("main", description="Branch name to use, defaults to main")
+    connectionType: ScmConnectionType = Field(..., description="Connection authentication type")
+    settings: Optional[dict[str, Any]] = Field(None, description="Additional settings for the connection, including authentication information")
 
 
 class ScmConnectionUpdate(N8nBaseModel):
-    """更新源碼控制連接請求模型"""
-    name: Optional[str] = None
-    provider: Optional[ScmProvider] = None
-    repositoryUrl: Optional[str] = None
-    branchName: Optional[str] = None
-    connectionType: Optional[ScmConnectionType] = None
-    settings: Optional[dict[str, Any]] = None
+    """Update source control connection request model, used to modify properties of an existing connection"""
+    name: Optional[str] = Field(None, description="New display name for the connection")
+    provider: Optional[ScmProvider] = Field(None, description="Source code provider type")
+    repositoryUrl: Optional[str] = Field(None, description="New repository URL")
+    branchName: Optional[str] = Field(None, description="New branch name to use")
+    connectionType: Optional[ScmConnectionType] = Field(None, description="Connection authentication type")
+    settings: Optional[dict[str, Any]] = Field(None, description="Additional settings for the connection")
 
 
 class PullRequestStatus(N8nBaseModel):
-    """拉取請求狀態資料模型"""
-    pullRequestId: str
-    state: PullRequestState
-    title: str
-    url: str
-    createdAt: datetime
-    updatedAt: Optional[datetime] = None
-    mergedAt: Optional[datetime] = None
-    closedAt: Optional[datetime] = None
+    """Pull request status data model, represents the current status of a PR"""
+    pullRequestId: str = Field(..., description="Unique identifier of the pull request")
+    state: PullRequestState = Field(..., description="Current state of the pull request")
+    title: str = Field(..., description="Title of the pull request")
+    url: str = Field(..., description="Web URL of the pull request")
+    createdAt: datetime = Field(..., description="Pull request creation time")
+    updatedAt: Optional[datetime] = Field(None, description="Pull request last update time")
+    mergedAt: Optional[datetime] = Field(None, description="Pull request merge time, if merged")
+    closedAt: Optional[datetime] = Field(None, description="Pull request close time, if closed")
 
 
 class CommitInfo(N8nBaseModel):
-    """提交資訊資料模型"""
-    id: str
-    message: str
-    date: datetime
-    author: str
-    url: Optional[str] = None
+    """Commit information data model, represents detailed information about a Git commit"""
+    id: str = Field(..., description="SHA identifier of the commit")
+    message: str = Field(..., description="Commit message")
+    date: datetime = Field(..., description="Commit time")
+    author: str = Field(..., description="Commit author")
+    url: Optional[str] = Field(None, description="Web URL of the commit")
 
 
 class ScmStatus(N8nBaseModel):
-    """源碼控制狀態資料模型"""
-    connected: bool
-    currentBranch: Optional[str] = None
-    latestCommit: Optional[CommitInfo] = None
-    pendingChanges: bool = False
-    activePullRequest: Optional[PullRequestStatus] = None
+    """Source control status data model, represents the current status of a source code connection"""
+    connected: bool = Field(..., description="Whether the source code connection is active")
+    currentBranch: Optional[str] = Field(None, description="Current working branch")
+    latestCommit: Optional[CommitInfo] = Field(None, description="Latest commit information")
+    pendingChanges: bool = Field(False, description="Whether there are uncommitted changes")
+    activePullRequest: Optional[PullRequestStatus] = Field(None, description="Active pull request, if any")
 
 
 class StatusItemType(str, Enum):
-    """狀態項目類型枚舉"""
-    WORKFLOW = "workflow"
-    CREDENTIAL = "credential"
-    VARIABLE = "variable"
-    TAG = "tag"
-    OWNER = "owner"
-    OTHER = "other"
+    """Status item type enum, defines types of resources that can be tracked"""
+    WORKFLOW = "workflow"  # Workflow
+    CREDENTIAL = "credential"  # Credential
+    VARIABLE = "variable"  # Variable
+    TAG = "tag"  # Tag
+    OWNER = "owner"  # Owner
+    OTHER = "other"  # Other types
 
 
 class StatusItemStatus(str, Enum):
-    """狀態項目狀態枚舉"""
-    CREATED = "created"
-    MODIFIED = "modified"
-    DELETED = "deleted"
-    RENAMED = "renamed"
-    CONFLICT = "conflict"
+    """Status item status enum, defines change states of resources"""
+    CREATED = "created"  # Newly created
+    MODIFIED = "modified"  # Modified
+    DELETED = "deleted"  # Deleted
+    RENAMED = "renamed"  # Renamed
+    CONFLICT = "conflict"  # Conflict
 
 
 class StatusItem(N8nBaseModel):
-    """狀態項目資料模型"""
-    id: str
-    name: str
-    type: StatusItemType
-    status: StatusItemStatus
-    oldName: Optional[str] = None  # 用於重命名操作
+    """Status item data model, represents a resource item tracked by source control"""
+    id: str = Field(..., description="Unique identifier of the item")
+    name: str = Field(..., description="Name of the item")
+    type: StatusItemType = Field(..., description="Type of the item")
+    status: StatusItemStatus = Field(..., description="Change status of the item")
+    oldName: Optional[str] = Field(None, description="Old name of the item, only used in rename operations")
 
 
 class StatusList(N8nBaseModel):
-    """狀態列表響應模型"""
-    data: list[StatusItem]
-    count: int
+    """Status list response model, contains all item statuses tracked by source control"""
+    data: list[StatusItem] = Field(..., description="List of status items")
+    count: int = Field(..., description="Total number of status items")
 
 
 class PullRequestCreate(N8nBaseModel):
-    """建立拉取請求請求模型"""
-    title: str
-    description: Optional[str] = None
-    targetBranch: Optional[str] = None
+    """Create pull request request model, used to create a new PR"""
+    title: str = Field(..., description="Title of the pull request")
+    description: Optional[str] = Field(None, description="Detailed description of the pull request")
+    targetBranch: Optional[str] = Field(None, description="Target branch, defaults to the repository's default branch")
 
 
 class BranchCreate(N8nBaseModel):
-    """建立分支請求模型"""
-    name: str
-    fromBranch: Optional[str] = None
+    """Create branch request model, used to create a new Git branch"""
+    name: str = Field(..., description="Name of the new branch")
+    fromBranch: Optional[str] = Field(None, description="Branch to create from, defaults to current branch")

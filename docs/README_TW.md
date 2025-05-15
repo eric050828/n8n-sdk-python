@@ -1,6 +1,8 @@
 # n8n-sdk-python
 
-這是 n8n 工作流自動化平台的非官方 Python SDK。此 SDK 提供了與 n8n API 進行交互的方便包裝器，使您能夠從 Python 應用程序中管理工作流、執行、憑證和其他 n8n 資源。
+[ [English](../README.md) | 繁體中文 ]
+
+這是 [n8n 工作流自動化平台](https://n8n.io/) 的非官方 Python SDK。此 SDK 提供了與 n8n API 進行交互的方便包裝器，使您能夠從 Python 應用程序中管理工作流、執行、憑證和其他 n8n 資源。
 
 ## 目錄
 - [系統需求](#系統需求)

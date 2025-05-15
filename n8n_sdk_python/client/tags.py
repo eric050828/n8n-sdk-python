@@ -3,8 +3,10 @@ n8n Tags API Client.
 """
 
 from typing import Optional, Any
+
 from ..client.base import BaseClient
-from ..models.workflows import Tag, TagList # Removed TagCreate, TagUpdate
+from ..models.workflows import Tag, TagList
+
 
 class TagClient(BaseClient):
     """

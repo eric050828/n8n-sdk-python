@@ -4,6 +4,7 @@ n8n 節點 API 客戶端。
 """
 
 from typing import Any, Optional
+
 from pydantic import ValidationError
 
 from ..client.base import BaseClient
@@ -14,6 +15,7 @@ from ..models.nodes import (
     NodeParameterOptions,
     NodeConnectionOptions
 )
+
 
 class NodesClient(BaseClient):
     """n8n 節點 API 客戶端類"""

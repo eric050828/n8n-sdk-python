@@ -1,7 +1,8 @@
 import logging
 import logging.handlers
-import sys
 import os
+import sys
+
 
 # Define log format string and date format for standard logging
 _LOG_FORMAT_STR = "%(asctime)s,%(msecs)03d | %(levelname)-8s | %(name)s:%(funcName)s:%(lineno)d - %(message)s"

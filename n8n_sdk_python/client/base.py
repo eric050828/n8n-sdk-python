@@ -1,5 +1,5 @@
 import os
-from typing import Dict, Any, Optional, List, Union
+from typing import Any, Optional
 
 import httpx
 
@@ -27,9 +27,9 @@ class BaseClient:
         self, 
         method: str, 
         endpoint: str, 
-        params: Optional[Dict[str, Any]] = None,
-        json_payload: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None,
+        params: Optional[dict[str, Any]] = None,
+        json_payload: Optional[dict[str, Any]] = None,
+        headers: Optional[dict[str, str]] = None,
         timeout: Optional[int] = None
     ) -> Any:
         """
@@ -107,8 +107,8 @@ class BaseClient:
     async def get(
         self, 
         endpoint: str, 
-        params: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None
+        params: Optional[dict[str, Any]] = None,
+        headers: Optional[dict[str, str]] = None
     ) -> Any:
         """執行 GET 請求"""
         return await self._request("GET", endpoint, params=params, headers=headers)
@@ -116,9 +116,9 @@ class BaseClient:
     async def put(
         self,
         endpoint: str,
-        json: Optional[Dict[str, Any]] = None,
-        params: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None
+        json: Optional[dict[str, Any]] = None,
+        params: Optional[dict[str, Any]] = None,
+        headers: Optional[dict[str, str]] = None
     ) -> Any:
         """執行 PUT 請求"""
         return await self._request("PUT", endpoint, json_payload=json, params=params, headers=headers)
@@ -126,9 +126,9 @@ class BaseClient:
     async def post(
         self, 
         endpoint: str, 
-        json: Optional[Dict[str, Any]] = None,
-        params: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None
+        json: Optional[dict[str, Any]] = None,
+        params: Optional[dict[str, Any]] = None,
+        headers: Optional[dict[str, str]] = None
     ) -> Any:
         """執行 POST 請求"""
         return await self._request("POST", endpoint, json_payload=json, params=params, headers=headers)
@@ -136,9 +136,9 @@ class BaseClient:
     async def patch(
         self, 
         endpoint: str, 
-        json: Optional[Dict[str, Any]] = None,
-        params: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None
+        json: Optional[dict[str, Any]] = None,
+        params: Optional[dict[str, Any]] = None,
+        headers: Optional[dict[str, str]] = None
     ) -> Any:
         """執行 PATCH 請求"""
         return await self._request("PATCH", endpoint, json_payload=json, params=params, headers=headers)
@@ -146,8 +146,8 @@ class BaseClient:
     async def delete(
         self, 
         endpoint: str, 
-        params: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None
+        params: Optional[dict[str, Any]] = None,
+        headers: Optional[dict[str, str]] = None
     ) -> Any:
         """執行 DELETE 請求"""
         return await self._request("DELETE", endpoint, params=params, headers=headers) 
