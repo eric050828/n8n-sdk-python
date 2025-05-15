@@ -1,0 +1,38 @@
+name: Publish Python Package to PyPI
+
+on:
+  release:
+    types: [published] # Triggers the workflow when a new GitHub release is published
+
+permissions:
+  contents: read
+  id-token: write # Required for OIDC trusted publishing
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi # Matches the environment name in your PyPI trusted publisher settings
+      url: https://pypi.org/p/n8n-sdk-python # Optional: Link to the PyPI project page
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.x" # Use a version compatible with your project
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build
+
+    - name: Build package
+      run: python -m build
+
+    - name: Publish package to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      # No API token needed here due to trusted publishing (OIDC)
+      # The action will automatically fetch the OIDC token and exchange it with PyPI
+      # Ensure your PyPI project is configured for trusted publishing with this repository and workflow. 

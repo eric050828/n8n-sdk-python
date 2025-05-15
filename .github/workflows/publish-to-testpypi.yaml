@@ -1,0 +1,38 @@
+name: Publish Python Package to PyPI # 工作流程的名稱，會顯示在 GitHub Actions 頁面
+
+on:
+  release:
+    types: [published] # 觸發條件：當一個新的 GitHub "release" 被 "published" 時執行
+
+permissions: # 工作流程執行時所需的權限
+  contents: read # 允許讀取儲存庫內容 (例如 checkout 程式碼)
+  id-token: write # 允許 GitHub Actions 為此工作流程請求一個 OIDC ID Token，這是 Trusted Publishing 的核心
+
+jobs: # 工作流程包含的任務
+  deploy: # 任務的 ID，可以自訂
+    runs-on: ubuntu-latest # 指定此任務在哪種虛擬環境中執行 (使用最新的 Ubuntu)
+    environment: # 設定此任務執行的 GitHub Environment
+      name: pypi # Environment 的名稱，必須與您在 PyPI Trusted Publisher 設定中的 "Environment name" 完全一致
+      url: https://pypi.org/p/n8n-sdk-python # 可選：一個 URL，會在 GitHub Actions UI 中顯示，方便跳轉到您的 PyPI 專案頁面
+
+    steps: # 任務執行的步驟
+    - uses: actions/checkout@v4 # 第一步：從您的儲存庫中 checkout (下載) 程式碼到虛擬環境
+
+    - name: Set up Python # 設定 Python 環境
+      uses: actions/setup-python@v5 # 使用官方的 setup-python action
+      with:
+        python-version: "3.x" # 指定要使用的 Python 版本，"3.x" 會使用最新的 Python 3 版本
+
+    - name: Install dependencies # 安裝建置套件所需的依賴
+      run: | # 執行 shell 命令
+        python -m pip install --upgrade pip # 升級 pip
+        pip install build # 安裝 'build' 套件，用於建置您的 Python 套件
+
+    - name: Build package # 建置您的套件
+      run: python -m build # 執行 'build' 命令，它會根據您的 pyproject.toml 建置 sdist (原始碼發行版) 和 wheel (二進位發行版) 到 dist/ 目錄
+
+    - name: Publish package to PyPI # 發佈套件到 PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1 # 使用官方的 pypi-publish action
+      # 此 action 會自動處理 OIDC token 的獲取和與 PyPI 的交換，
+      # 因此不需要手動設定 PYPI_API_TOKEN。
+      # 前提是您已在 PyPI 正確設定了 Trusted Publishing。
