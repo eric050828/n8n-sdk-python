@@ -2,6 +2,11 @@
 
 This document records all notable changes to n8n-sdk-python.
 
+## [0.1.2] - 2025-05-17
+
+### Fixed
+- Removed `callerPolicy` field from `WorkflowSettings` model. This field is not supported by the n8n API for workflow creation/update and was causing a `400 - request/body/settings must NOT have additional properties` error.
+
 ## [0.1.1] - 2025-05-16
 
 ### Added

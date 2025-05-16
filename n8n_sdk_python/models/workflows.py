@@ -62,8 +62,7 @@ class WorkflowSettings(N8nBaseModel):
     saveDataSuccessExecution: Optional[str] = Field("all", description="Data saving strategy for successful executions: 'all', 'none' or specific node ID")
     saveManualExecutions: Optional[bool] = Field(True, description="Whether to save manually triggered executions")
     executionTimeout: Optional[int] = Field(3600, description="Workflow execution timeout in seconds")
-    callerPolicy: Optional[str] = Field("workflowsFromSameOwner", description="Caller policy, controls who can call this workflow")
-    timezone: Optional[str] = Field("UTC", description="Timezone used by the workflow, such as 'America/New_York'")
+    timezone: Optional[str] = Field("America/New_York", description="Timezone used by the workflow, default is 'America/New_York'")
     errorWorkflow: Optional[str] = Field(None, description="ID of the error handling workflow to trigger when workflow errors")
     executionOrder: Optional[str] = Field("v1", description="Workflow execution order strategy, currently supports 'v1'")
 
