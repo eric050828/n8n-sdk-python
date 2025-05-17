@@ -181,8 +181,9 @@ cython_debug/
 .cursorindexingignore
 
 logs/
-tests/
+n8n/
 
 docs/installation.md
 docs/usage.md
 N8N-API.md
+FixReport.md

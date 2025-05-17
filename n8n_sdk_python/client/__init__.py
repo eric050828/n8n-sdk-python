@@ -3,6 +3,7 @@ n8n API 客戶端模組。
 這個模組包含與 n8n API 通信的客戶端類。
 """
 
+import os
 from typing import Optional
 
 from .base import BaseClient
@@ -33,6 +34,9 @@ class N8nClient:
             base_url: n8n API 的基礎 URL
             api_key: n8n API 金鑰
         """
+        self.base_url = base_url or os.getenv("N8N_BASE_URL", "http://localhost:5678")
+        self.api_key = api_key or os.getenv("N8N_API_KEY")
+        
         self.audit = AuditClient(base_url=base_url, api_key=api_key)
         self.credentials = CredentialClient(base_url=base_url, api_key=api_key)
         self.executions = ExecutionClient(base_url=base_url, api_key=api_key)
