@@ -1,5 +1,9 @@
 """
-n8n Credential API Client.
+N8n Credential API client for managing authentication credentials.
+
+This module provides a client for interacting with the n8n Credential API,
+enabling operations such as creating, retrieving, updating, testing, and
+deleting credentials, as well as retrieving credential type information.
 """
 
 from typing import Any, Optional
@@ -22,29 +26,36 @@ from ..utils.logger import log
 
 class CredentialClient(BaseClient):
     """
-    Client for interacting with n8n Credential APIs.
+    Client for interacting with the n8n Credential API.
+    
+    Provides methods for credential management, including creating, retrieving,
+    updating, testing, and deleting credentials, as well as retrieving credential
+    type information and schemas.
     """
     
     def __init__(self, base_url: Optional[str] = None, api_key: Optional[str] = None):
         """
-        初始化憑證客戶端
+        Initialize the credential client.
         
         Args:
-            base_url: n8n API 的基礎 URL
-            api_key: n8n API 金鑰
+            base_url: Base URL for the n8n API, defaults to environment variable or localhost
+            api_key: Authentication key for n8n API, defaults to environment variable
         """
         super().__init__(base_url=base_url, api_key=api_key)
         self._credential_types_cache = None
     
     async def get_credentials(self, credential_type: Optional[str] = None) -> list[CredentialListItem]:
         """
-        獲取憑證列表
+        Retrieve a list of credentials from the n8n instance.
         
         Args:
-            credential_type: 按憑證類型過濾
+            credential_type: Optional filter to retrieve credentials of a specific type
             
         Returns:
-            憑證列表
+            A list of credential objects containing basic credential information
+            
+        Note:
+            This method catches exceptions and returns an empty list on error
         """
         params: dict[str, Any] = {}
         if credential_type:
@@ -57,18 +68,21 @@ class CredentialClient(BaseClient):
                 credentials.append(CredentialListItem(**item))
             return credentials
         except Exception as e:
-            log.error(f"獲取憑證列表失敗: {str(e)}")
+            log.error(f"Failed to retrieve credentials list: {str(e)}")
             return []
     
     async def get_credential(self, credential_id: str) -> Optional[CredentialDetail]:
         """
-        獲取指定 ID 的憑證詳情
+        Retrieve detailed information about a specific credential.
         
         Args:
-            credential_id: 憑證 ID
+            credential_id: The ID of the credential to retrieve
             
         Returns:
-            憑證詳情，如果不存在則返回 None
+            A credential detail object if found, None otherwise
+            
+        Note:
+            This method catches exceptions and returns None on error
         """
         try:
             response = await self.get(f"/v1/credentials/{credential_id}")
@@ -76,7 +90,7 @@ class CredentialClient(BaseClient):
                 return CredentialDetail(**response)
             return None
         except Exception as e:
-            log.error(f"獲取憑證 {credential_id} 失敗: {str(e)}")
+            log.error(f"Failed to retrieve credential {credential_id}: {str(e)}")
             return None
     
     async def create_credential(
@@ -86,7 +100,19 @@ class CredentialClient(BaseClient):
         data: dict[str, Any]
     ) -> CredentialShort:
         """
-        Creates a credential.
+        Create a new credential in the n8n instance.
+        
+        Args:
+            name: The name for the credential
+            credential_type: The type of credential to create
+            data: The credential data containing authentication information
+            
+        Returns:
+            A credential object representing the created credential
+            
+        Raises:
+            N8nAPIError: If the API request fails
+            
         API Docs: https://docs.n8n.io/api/v1/credentials/#create-a-credential
         """
         payload = CredentialCreate(name=name, type=credential_type, data=data).model_dump()
@@ -95,14 +121,17 @@ class CredentialClient(BaseClient):
     
     async def update_credential(self, credential_id: str, credential_data: dict[str, Any]) -> Optional[CredentialDetail]:
         """
-        更新指定 ID 的憑證
+        Update an existing credential in the n8n instance.
         
         Args:
-            credential_id: 憑證 ID
-            credential_data: 憑證數據
+            credential_id: The ID of the credential to update
+            credential_data: The updated credential data
             
         Returns:
-            更新後的憑證，如果失敗則返回 None
+            An updated credential detail object if successful, None otherwise
+            
+        Note:
+            This method catches exceptions and returns None on error
         """
         try:
             response = await self.patch(f"/v1/credentials/{credential_id}", json=credential_data)
@@ -110,7 +139,7 @@ class CredentialClient(BaseClient):
                 return CredentialDetail(**response)
             return None
         except Exception as e:
-            log.error(f"更新憑證 {credential_id} 失敗: {str(e)}")
+            log.error(f"Failed to update credential {credential_id}: {str(e)}")
             return None
     
     async def delete_credential(
@@ -118,7 +147,17 @@ class CredentialClient(BaseClient):
         credential_id: str
     ) -> CredentialShort:
         """
-        Deletes a credential from your instance.
+        Delete a credential from the n8n instance.
+        
+        Args:
+            credential_id: The ID of the credential to delete
+            
+        Returns:
+            A credential object representing the deleted credential
+            
+        Raises:
+            N8nAPIError: If the credential is not found or the request fails
+            
         API Docs: https://docs.n8n.io/api/v1/credentials/#delete-credential-by-id
         """
         response_data = await self.delete(endpoint=f"/v1/credentials/{credential_id}")
@@ -126,13 +165,16 @@ class CredentialClient(BaseClient):
     
     async def test_credential(self, credential_id: str) -> Optional[CredentialTestResult]:
         """
-        測試憑證是否有效
+        Test if a credential is valid and can authenticate successfully.
         
         Args:
-            credential_id: 憑證 ID
+            credential_id: The ID of the credential to test
             
         Returns:
-            測試結果，如果失敗則返回 None
+            A test result object indicating success or failure with a message
+            
+        Note:
+            This method catches exceptions and returns a failure result on error
         """
         try:
             response = await self.post(f"/v1/credentials/{credential_id}/test")
@@ -143,18 +185,21 @@ class CredentialClient(BaseClient):
                 )
             return None
         except Exception as e:
-            log.error(f"測試憑證 {credential_id} 失敗: {str(e)}")
+            log.error(f"Failed to test credential {credential_id}: {str(e)}")
             return CredentialTestResult(status="error", message=str(e))
     
     async def get_credential_types(self, use_cache: bool = True) -> dict[str, CredentialTypeDescription]:
         """
-        獲取所有可用的憑證類型
+        Retrieve all available credential types from the n8n instance.
         
         Args:
-            use_cache: 是否使用緩存，如果為 True 且已有緩存則返回緩存結果
+            use_cache: Whether to use cached results if available
             
         Returns:
-            憑證類型字典
+            A dictionary mapping credential type names to their descriptions
+            
+        Note:
+            This method catches exceptions and returns an empty dictionary on error
         """
         if use_cache and self._credential_types_cache is not None:
             return self._credential_types_cache
@@ -174,18 +219,18 @@ class CredentialClient(BaseClient):
             self._credential_types_cache = credential_types
             return credential_types
         except Exception as e:
-            log.error(f"獲取憑證類型列表失敗: {str(e)}")
+            log.error(f"Failed to retrieve credential types: {str(e)}")
             return {}
     
     async def get_credential_type(self, type_name: str) -> Optional[CredentialTypeDescription]:
         """
-        獲取指定名稱的憑證類型
+        Retrieve information about a specific credential type.
         
         Args:
-            type_name: 憑證類型名稱
+            type_name: The name of the credential type to retrieve
             
         Returns:
-            憑證類型詳情，如果不存在則返回 None
+            A credential type description if found, None otherwise
         """
         types = await self.get_credential_types()
         return types.get(type_name)
@@ -195,13 +240,24 @@ class CredentialClient(BaseClient):
         credential_type_name: str
     ) -> CredentialDataSchemaResponse:
         """
-        Show credential data schema.
+        Retrieve the schema for a specific credential type.
+        
+        The schema describes the data structure required for creating
+        credentials of the specified type.
+        
+        Args:
+            credential_type_name: The name of the credential type to get the schema for
+            
+        Returns:
+            A schema response object containing the credential data schema
+            
+        Raises:
+            N8nAPIError: If the credential type is not found or the request fails
+            
         API Docs: https://docs.n8n.io/api/v1/credentials/#show-credential-data-schema
         """
         response_data = await self.get(endpoint=f"/v1/credentials/schema/{credential_type_name}")
-        if isinstance(response_data, dict):
-            return CredentialDataSchemaResponse(**response_data)
-        raise ValueError("Unexpected response format for credential schema")
+        return CredentialDataSchemaResponse(**response_data)
 
     async def transfer_credential_to_project(
         self,
@@ -209,9 +265,22 @@ class CredentialClient(BaseClient):
         destination_project_id: str
     ) -> N8nBaseModel:
         """
-        Transfer a credential to another project.
-        API Docs: https://docs.n8n.io/api/v1/credentials/#transfer-a-credential-to-another-project
-                  (Note: API docs link this under Workflow section, but path is /credentials/.../transfer)
+        Transfer a credential to another project in the n8n instance.
+        
+        This operation moves a credential from its current project to a different project,
+        maintaining all credential configurations.
+        
+        Args:
+            credential_id: The ID of the credential to transfer
+            destination_project_id: The ID of the destination project
+            
+        Returns:
+            A basic response object indicating success
+            
+        Raises:
+            N8nAPIError: If the credential or project is not found, or if the request fails
+            
+        API Docs: https://docs.n8n.io/api/v1/workflows/#transfer-a-credential-to-another-project
         """
         _payload = {"destinationProjectId": destination_project_id}
         response_data = await self.put(endpoint=f"/v1/credentials/{credential_id}/transfer", json=_payload)

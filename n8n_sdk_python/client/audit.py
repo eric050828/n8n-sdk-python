@@ -1,5 +1,9 @@
 """
-n8n Audit API Client.
+N8n Audit API client for generating security audit reports.
+
+This module provides a client for interacting with the n8n Audit API,
+enabling the generation of security audit reports for n8n instances.
+These reports help identify potential security risks and best practices.
 """
 
 from typing import Optional, Any
@@ -10,7 +14,11 @@ from ..models.audit import AuditAdditionalOptions, AuditResponse
 
 class AuditClient(BaseClient):
     """
-    Client for interacting with n8n Audit APIs.
+    Client for interacting with the n8n Audit API.
+    
+    Provides methods for generating security audit reports that analyze
+    various security aspects of an n8n instance, including credentials,
+    databases, filesystem access, nodes, and instance configuration.
     """
     
     def __init__(self, *args, **kwargs):
@@ -21,7 +29,25 @@ class AuditClient(BaseClient):
         options: Optional[AuditAdditionalOptions | dict[str, Any]] = None
     ) -> AuditResponse:
         """
-        Generate a security audit for your n8n instance.
+        Generate a comprehensive security audit report for the n8n instance.
+        
+        The audit report analyzes various security aspects including credentials,
+        database queries, filesystem access, node usage, and instance configuration
+        to identify potential security risks and best practices.
+        
+        Args:
+            options: Optional configuration for the audit report generation,
+                    either as an AuditAdditionalOptions instance or a dictionary.
+                    Can include settings like abandoned workflow threshold days
+                    or specific categories to audit.
+                    
+        Returns:
+            An AuditResponse object containing the detailed audit report findings
+            
+        Raises:
+            TypeError: If options parameter is not of the expected format
+            N8nAPIError: If the API request fails
+            
         API Docs: https://docs.n8n.io/api/v1/audit/#generate-an-audit
         """
         _options: Optional[AuditAdditionalOptions] = None

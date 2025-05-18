@@ -1,6 +1,10 @@
 """
-n8n 節點 API 客戶端。
-處理節點類型的獲取和節點操作。
+N8n Nodes API client for accessing node types and operations.
+
+This module provides a client for interacting with the n8n Nodes API,
+enabling operations such as retrieving available node types, getting
+detailed node type information, and fetching parameter and connection options.
+These operations help with building and configuring workflow nodes programmatically.
 """
 
 from typing import Any, Optional
@@ -18,17 +22,30 @@ from ..models.nodes import (
 
 
 class NodesClient(BaseClient):
-    """n8n 節點 API 客戶端類"""
+    """
+    Client for interacting with the n8n Nodes API.
+    
+    Provides methods for retrieving node type information, parameter options,
+    and connection options, which can be used to programmatically discover
+    and configure workflow nodes.
+    
+    Note:
+        This client interacts with unofficial/internal n8n APIs that may
+        change between versions.
+    """
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
     
     async def get_node_types(self) -> list[NodeType]:
         """
-        獲取所有可用的節點類型
+        Retrieve all available node types from the n8n instance.
         
         Returns:
-            節點類型列表
+            A list of NodeType objects containing basic node type information
+            
+        Note:
+            This method catches exceptions and returns an empty list on error
         """
         try:
             response = await self.get("/node-types")
@@ -38,22 +55,26 @@ class NodesClient(BaseClient):
                 try:
                     node_types.append(NodeType(**item))
                 except ValidationError:
-                    pass  # 忽略無效的節點類型數據
+                    pass  # Ignore invalid node type data
             
             return node_types
         except Exception as e:
-            log.error(f"獲取節點類型列表失敗: {str(e)}")
+            log.error(f"Failed to retrieve node types list: {str(e)}")
             return []
     
     async def get_node_type(self, type_name: str) -> Optional[NodeTypeDescription]:
         """
-        獲取特定節點類型的詳細信息
+        Retrieve detailed information about a specific node type.
         
         Args:
-            type_name: 節點類型名稱，例如 'n8n-nodes-base.httpRequest'
+            type_name: Node type name, e.g., 'n8n-nodes-base.httpRequest'
             
         Returns:
-            節點類型描述，如果找不到則返回 None
+            A NodeTypeDescription object containing detailed node type information,
+            or None if the node type is not found or an error occurs
+            
+        Note:
+            This method catches exceptions and returns None on error
         """
         try:
             response = await self.get(f"/node-types/{type_name}")
@@ -63,7 +84,7 @@ class NodesClient(BaseClient):
                 
             return NodeTypeDescription(**response["data"])
         except Exception as e:
-            log.error(f"獲取節點類型 {type_name} 失敗: {str(e)}")
+            log.error(f"Failed to retrieve node type {type_name}: {str(e)}")
             return None
     
     async def get_parameter_options(
@@ -74,16 +95,23 @@ class NodesClient(BaseClient):
         payload: Optional[dict[str, Any]] = None
     ) -> Optional[NodeParameterOptions]:
         """
-        獲取節點參數的可選值
+        Retrieve available options for a node parameter.
+        
+        This is useful for dynamically populating dropdown options based on
+        previously selected parameters in a node.
         
         Args:
-            type_name: 節點類型名稱
-            method_name: 請求方法名稱
-            path: 參數路徑 (例如: 'parameters.resource')
-            payload: 請求的附加數據
+            type_name: Node type name
+            method_name: Request method name
+            path: Parameter path (e.g., 'parameters.resource')
+            payload: Additional request data
             
         Returns:
-            參數選項，如果找不到則返回 None
+            A NodeParameterOptions object containing available options,
+            or None if options cannot be retrieved or an error occurs
+            
+        Note:
+            This method catches exceptions and returns None on error
         """
         try:
             request_data = {
@@ -103,7 +131,7 @@ class NodesClient(BaseClient):
                 
             return NodeParameterOptions(**response["data"])
         except Exception as e:
-            log.error(f"獲取節點 {type_name} 參數選項失敗: {str(e)}")
+            log.error(f"Failed to retrieve parameter options for node {type_name}: {str(e)}")
             return None
     
     async def get_connection_options(
@@ -113,15 +141,22 @@ class NodesClient(BaseClient):
         node_filter: Optional[dict[str, Any]] = None
     ) -> Optional[NodeConnectionOptions]:
         """
-        獲取節點連接的可選值
+        Retrieve available connection options for a node.
+        
+        This is useful for determining which nodes can be connected
+        to a specific node based on input/output compatibility.
         
         Args:
-            node_type: 節點類型名稱
-            connections_options: 連接選項配置
-            node_filter: 節點過濾條件
+            node_type: Node type name
+            connections_options: Connection options configuration
+            node_filter: Optional node filtering conditions
             
         Returns:
-            連接選項，如果獲取失敗則返回 None
+            A NodeConnectionOptions object containing available connection options,
+            or None if options cannot be retrieved or an error occurs
+            
+        Note:
+            This method catches exceptions and returns None on error
         """
         try:
             request_data = {
@@ -140,5 +175,5 @@ class NodesClient(BaseClient):
                 
             return NodeConnectionOptions(**response["data"])
         except Exception as e:
-            log.error(f"獲取節點連接選項失敗: {str(e)}")
+            log.error(f"Failed to retrieve node connection options: {str(e)}")
             return None 

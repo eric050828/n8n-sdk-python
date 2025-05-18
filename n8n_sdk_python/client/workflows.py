@@ -1,5 +1,10 @@
 """
-n8n Workflow API Client.
+N8n Workflow API client for managing automated workflows.
+
+This module provides a client for interacting with the n8n Workflow API,
+enabling operations such as creating, listing, retrieving, updating, and
+deleting workflows, as well as activating and deactivating workflows,
+transferring workflows between projects, and managing workflow tags.
 """
 
 from typing import Optional, Any
@@ -15,7 +20,12 @@ from ..utils.logger import log # Import logger
 
 class WorkflowClient(BaseClient):
     """
-    Client for interacting with n8n Workflow APIs.
+    Client for interacting with the n8n Workflow API.
+    
+    Provides methods for workflow management, including creating, listing,
+    retrieving, updating, and deleting workflows, as well as activating
+    and deactivating workflows, transferring workflows between projects,
+    and managing workflow tags.
     """
     
     def __init__(self, *args, **kwargs):
@@ -30,7 +40,24 @@ class WorkflowClient(BaseClient):
         static_data: Optional[WorkflowStaticData | dict[str, int]] = None # Assuming WorkflowStaticData model
     ) -> Workflow:
         """
-        Create a workflow in your instance.
+        Create a new workflow in the n8n instance.
+        
+        Args:
+            name: The name of the workflow
+            nodes: List of workflow nodes, either as Node instances or dictionaries
+            connections: Dictionary of node connections defining the workflow structure
+            settings: Optional workflow settings, either as a WorkflowSettings instance
+                     or a dictionary
+            static_data: Optional static data for the workflow, either as a 
+                        WorkflowStaticData instance or a dictionary
+                        
+        Returns:
+            A Workflow object representing the created workflow
+            
+        Raises:
+            TypeError: If parameters are not of the expected format
+            N8nAPIError: If the API request fails
+            
         API Docs: https://docs.n8n.io/api/v1/workflows/#create-a-workflow
         """
         _nodes: list[Node] = []
@@ -92,7 +119,20 @@ class WorkflowClient(BaseClient):
         cursor: Optional[str] = None
     ) -> WorkflowList:
         """
-        Retrieve all workflows from your instance.
+        Retrieve all workflows from the n8n instance with optional filtering.
+        
+        Args:
+            active: Filter by workflow active status
+            tags: Comma-separated string of tag names to filter by
+            name: Filter workflows by name
+            project_id: Filter workflows by project ID
+            exclude_pinned_data: Whether to exclude pinned data from the response
+            limit: Maximum number of workflows to return (max 250)
+            cursor: Pagination cursor for retrieving additional pages
+            
+        Returns:
+            A WorkflowList object containing workflow data and pagination info
+            
         API Docs: https://docs.n8n.io/api/v1/workflows/#retrieve-all-workflows
         """
         params: dict[str, Any] = {}
@@ -120,7 +160,18 @@ class WorkflowClient(BaseClient):
         exclude_pinned_data: Optional[bool] = None
     ) -> Workflow:
         """
-        Retrieves a workflow.
+        Retrieve a specific workflow from the n8n instance by ID.
+        
+        Args:
+            workflow_id: The ID of the workflow to retrieve
+            exclude_pinned_data: Whether to exclude pinned data from the response
+            
+        Returns:
+            A Workflow object containing detailed workflow information
+            
+        Raises:
+            N8nAPIError: If the workflow is not found or the request fails
+            
         API Docs: https://docs.n8n.io/api/v1/workflows/#retrieves-a-workflow
         """
         params: dict[str, Any] = {}
@@ -135,7 +186,17 @@ class WorkflowClient(BaseClient):
         workflow_id: str
     ) -> Workflow: # API doc states it returns the deleted workflow object
         """
-        Deletes a workflow.
+        Delete a specific workflow from the n8n instance.
+        
+        Args:
+            workflow_id: The ID of the workflow to delete
+            
+        Returns:
+            A Workflow object representing the deleted workflow
+            
+        Raises:
+            N8nAPIError: If the workflow is not found or the request fails
+            
         API Docs: https://docs.n8n.io/api/v1/workflows/#delete-a-workflow
         """
         response_data = await self.delete(endpoint=f"/v1/workflows/{workflow_id}")
@@ -151,7 +212,25 @@ class WorkflowClient(BaseClient):
         static_data: Optional[WorkflowStaticData | dict[str, Any]] = None # Assuming WorkflowStaticData
     ) -> Workflow:
         """
-        Update a workflow.
+        Update an existing workflow in the n8n instance.
+        
+        Args:
+            workflow_id: The ID of the workflow to update
+            name: The updated name of the workflow
+            nodes: List of workflow nodes, either as Node instances or dictionaries
+            connections: Dictionary of node connections defining the workflow structure
+            settings: Optional workflow settings, either as a WorkflowSettings instance
+                     or a dictionary
+            static_data: Optional static data for the workflow, either as a 
+                        WorkflowStaticData instance or a dictionary
+                        
+        Returns:
+            A Workflow object representing the updated workflow
+            
+        Raises:
+            TypeError: If parameters are not of the expected format
+            N8nAPIError: If the workflow is not found or the request fails
+            
         API Docs: https://docs.n8n.io/api/v1/workflows/#update-a-workflow
         """
         _nodes: list[Node] = []
@@ -202,7 +281,20 @@ class WorkflowClient(BaseClient):
         workflow_id: str
     ) -> Workflow:
         """
-        Activate a workflow.
+        Activate a workflow in the n8n instance.
+        
+        Activating a workflow enables its triggers to start accepting events,
+        allowing automated execution when trigger conditions are met.
+        
+        Args:
+            workflow_id: The ID of the workflow to activate
+            
+        Returns:
+            A Workflow object representing the activated workflow
+            
+        Raises:
+            N8nAPIError: If the workflow is not found or the request fails
+            
         API Docs: https://docs.n8n.io/api/v1/workflows/#activate-a-workflow
         """
         response_data = await self.post(endpoint=f"/v1/workflows/{workflow_id}/activate")
@@ -213,7 +305,20 @@ class WorkflowClient(BaseClient):
         workflow_id: str
     ) -> Workflow:
         """
-        Deactivate a workflow.
+        Deactivate a workflow in the n8n instance.
+        
+        Deactivating a workflow prevents its triggers from accepting events,
+        stopping automated execution until the workflow is activated again.
+        
+        Args:
+            workflow_id: The ID of the workflow to deactivate
+            
+        Returns:
+            A Workflow object representing the deactivated workflow
+            
+        Raises:
+            N8nAPIError: If the workflow is not found or the request fails
+            
         API Docs: https://docs.n8n.io/api/v1/workflows/#deactivate-a-workflow
         """
         response_data = await self.post(endpoint=f"/v1/workflows/{workflow_id}/deactivate")
@@ -225,7 +330,21 @@ class WorkflowClient(BaseClient):
         destination_project_id: str # Parameter type simplified to str
     ) -> N8nBaseModel: # API returns 200, docs don't specify body. Assuming generic success.
         """
-        Transfer a workflow to another project.
+        Transfer a workflow to another project in the n8n instance.
+        
+        This operation moves a workflow from its current project to a different project,
+        maintaining all workflow configurations and connections.
+        
+        Args:
+            workflow_id: The ID of the workflow to transfer
+            destination_project_id: The ID of the destination project
+            
+        Returns:
+            A basic response object indicating success
+            
+        Raises:
+            N8nAPIError: If the workflow or project is not found, or if the request fails
+            
         API Docs: https://docs.n8n.io/api/v1/workflows/#transfer-a-workflow-to-another-project
         """
         _payload = {"destinationProjectId": destination_project_id} # Direct payload construction
@@ -237,7 +356,19 @@ class WorkflowClient(BaseClient):
         workflow_id: str
     ) -> list[Tag]:
         """
-        Get workflow tags.
+        Get the tags associated with a workflow in the n8n instance.
+        
+        Tags are labels that can be applied to workflows for organization and filtering.
+        
+        Args:
+            workflow_id: The ID of the workflow to get tags for
+            
+        Returns:
+            A list of Tag objects representing the tags associated with the workflow
+            
+        Raises:
+            N8nAPIError: If the workflow is not found or the request fails
+            
         API Docs: https://docs.n8n.io/api/v1/workflows/#get-workflow-tags
         """
         response_data = await self.get(endpoint=f"/v1/workflows/{workflow_id}/tags")
@@ -249,7 +380,22 @@ class WorkflowClient(BaseClient):
         tags: list[WorkflowTagUpdateRequestItem | dict[str, Any]] 
     ) -> list[Tag]:
         """
-        Update tags of a workflow.
+        Update the tags associated with a workflow in the n8n instance.
+        
+        This operation replaces all existing tags on the workflow with the provided tags.
+        
+        Args:
+            workflow_id: The ID of the workflow to update tags for
+            tags: List of tag objects to associate with the workflow, either as
+                 WorkflowTagUpdateRequestItem instances or dictionaries with an 'id' field
+                 
+        Returns:
+            A list of Tag objects representing the updated tags associated with the workflow
+            
+        Raises:
+            TypeError: If tag items are not of the expected format
+            N8nAPIError: If the workflow or any tag is not found, or if the request fails
+            
         API Docs: https://docs.n8n.io/api/v1/workflows/#update-tags-of-a-workflow
         """
         _tags: list[WorkflowTagUpdateRequestItem] = []

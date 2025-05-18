@@ -5,7 +5,7 @@ from n8n_sdk_python.models import Workflow
 async def create_http_workflow():
     client = N8nClient(
         base_url="http://localhost:5678",
-        api_key="YOUR_N8N_API_KEY"  # 添加缺失的憑證
+        api_key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzYjEzMzk5Yi1iYjI2LTQyOWItOThlNS03ZTM4YTFkMzQ5OTMiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzQ4MTMxOTI4LCJleHAiOjE3NTA2NTEyMDB9.Zq6K82Uh9E0K1k92sgmy2mj_X9wC-9U5BPIuaxgCris"  # 添加缺失的憑證
     )
     
     # 建立工作流

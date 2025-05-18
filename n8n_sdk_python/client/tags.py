@@ -1,5 +1,9 @@
 """
-n8n Tags API Client.
+N8n Tags API client for managing workflow organization tags.
+
+This module provides a client for interacting with the n8n Tags API,
+enabling operations such as creating, listing, retrieving, updating, and
+deleting tags used for organizing workflows in an n8n instance.
 """
 
 from typing import Optional, Any
@@ -10,7 +14,11 @@ from ..models.workflows import Tag, TagList
 
 class TagClient(BaseClient):
     """
-    Client for interacting with n8n Tags APIs.
+    Client for interacting with the n8n Tags API.
+    
+    Provides methods for tag management, including creating, listing,
+    retrieving, updating, and deleting tags. Tags are used to organize
+    and categorize workflows within the n8n instance.
     """
     
     def __init__(self, *args, **kwargs):
@@ -21,7 +29,19 @@ class TagClient(BaseClient):
         name: str
     ) -> Tag:
         """
-        Create a tag in your instance.
+        Create a new tag in the n8n instance.
+        
+        Tags provide a way to organize and categorize workflows.
+        
+        Args:
+            name: The name for the new tag
+            
+        Returns:
+            A Tag object representing the created tag
+            
+        Raises:
+            N8nAPIError: If a tag with the same name already exists or if the request fails
+            
         API Docs: https://docs.n8n.io/api/v1/tags/#create-a-tag
         """
         payload = {"name": name}
@@ -34,7 +54,18 @@ class TagClient(BaseClient):
         cursor: Optional[str] = None
     ) -> TagList:
         """
-        Retrieve all tags from your instance.
+        Retrieve all tags from the n8n instance with pagination.
+        
+        Args:
+            limit: Maximum number of tags to return (max 250)
+            cursor: Pagination cursor for retrieving additional pages
+            
+        Returns:
+            A TagList object containing tag data and pagination info
+            
+        Raises:
+            N8nAPIError: If the API request fails
+            
         API Docs: https://docs.n8n.io/api/v1/tags/#retrieve-all-tags
         """
         params: dict[str, Any] = {}
@@ -51,7 +82,17 @@ class TagClient(BaseClient):
         tag_id: str
     ) -> Tag:
         """
-        Retrieves a tag.
+        Retrieve a specific tag from the n8n instance by ID.
+        
+        Args:
+            tag_id: The ID of the tag to retrieve
+            
+        Returns:
+            A Tag object containing the tag details
+            
+        Raises:
+            N8nAPIError: If the tag is not found or the request fails
+            
         API Docs: https://docs.n8n.io/api/v1/tags/#retrieves-a-tag
         """
         response_data = await self.get(endpoint=f"/v1/tags/{tag_id}")
@@ -62,7 +103,19 @@ class TagClient(BaseClient):
         tag_id: str
     ) -> Tag: # API doc states it returns the deleted tag object
         """
-        Deletes a tag.
+        Delete a specific tag from the n8n instance.
+        
+        Deleting a tag will remove it from all workflows that have it applied.
+        
+        Args:
+            tag_id: The ID of the tag to delete
+            
+        Returns:
+            A Tag object representing the deleted tag
+            
+        Raises:
+            N8nAPIError: If the tag is not found or the request fails
+            
         API Docs: https://docs.n8n.io/api/v1/tags/#delete-a-tag
         """
         response_data = await self.delete(endpoint=f"/v1/tags/{tag_id}")
@@ -74,7 +127,19 @@ class TagClient(BaseClient):
         name: str
     ) -> Tag:
         """
-        Update a tag.
+        Update a specific tag in the n8n instance.
+        
+        Args:
+            tag_id: The ID of the tag to update
+            name: The new name for the tag
+            
+        Returns:
+            A Tag object representing the updated tag
+            
+        Raises:
+            N8nAPIError: If the tag is not found, a tag with the new name
+                         already exists, or if the request fails
+            
         API Docs: https://docs.n8n.io/api/v1/tags/#update-a-tag
         """
         payload = {"name": name}
