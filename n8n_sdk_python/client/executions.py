@@ -1,5 +1,9 @@
 """
-n8n Execution API Client.
+N8n Execution API client for managing workflow executions.
+
+This module provides a client for interacting with the n8n Execution API,
+enabling operations such as retrieving, listing, and deleting workflow
+executions in an n8n instance.
 """
 
 from typing import Optional, Any
@@ -12,7 +16,11 @@ from ..models.executions import (
 
 class ExecutionClient(BaseClient):
     """
-    Client for interacting with n8n Execution APIs.
+    Client for interacting with the n8n Execution API.
+    
+    Provides methods for managing workflow executions, including listing
+    all executions with various filters, retrieving specific execution
+    details, and deleting executions from the n8n instance.
     """
     
     def __init__(self, *args, **kwargs):
@@ -28,7 +36,22 @@ class ExecutionClient(BaseClient):
         cursor: Optional[str] = None
     ) -> ExecutionList:
         """
-        Retrieve all executions from your instance.
+        Retrieve all workflow executions from the n8n instance with optional filtering.
+        
+        Args:
+            include_data: Whether to include detailed execution data in the response
+            status: Filter executions by status (error, success, waiting)
+            workflow_id: Filter executions by workflow ID
+            project_id: Filter executions by project ID
+            limit: Maximum number of executions to return (max 250)
+            cursor: Pagination cursor for retrieving additional pages
+            
+        Returns:
+            An ExecutionList object containing execution data and pagination info
+            
+        Raises:
+            N8nAPIError: If the API request fails
+            
         API Docs: https://docs.n8n.io/api/v1/executions/#retrieve-all-executions
         """
         params: dict[str, Any] = {}
@@ -54,7 +77,18 @@ class ExecutionClient(BaseClient):
         include_data: Optional[bool] = None
     ) -> Execution:
         """
-        Retrieve an execution from your instance.
+        Retrieve details of a specific workflow execution from the n8n instance.
+        
+        Args:
+            execution_id: The ID of the execution to retrieve
+            include_data: Whether to include detailed execution data in the response
+            
+        Returns:
+            An Execution object containing detailed execution information
+            
+        Raises:
+            N8nAPIError: If the execution is not found or the request fails
+            
         API Docs: https://docs.n8n.io/api/v1/executions/#retrieve-an-execution
         """
         params: dict[str, Any] = {}
@@ -69,7 +103,17 @@ class ExecutionClient(BaseClient):
         execution_id: int | str 
     ) -> Execution: # API doc states it returns the deleted execution object
         """
-        Deletes an execution from your instance.
+        Delete a specific workflow execution from the n8n instance.
+        
+        Args:
+            execution_id: The ID of the execution to delete
+            
+        Returns:
+            An Execution object representing the deleted execution
+            
+        Raises:
+            N8nAPIError: If the execution is not found or the request fails
+            
         API Docs: https://docs.n8n.io/api/v1/executions/#delete-an-execution
         """
         response_data = await self.delete(endpoint=f"/v1/executions/{execution_id}")

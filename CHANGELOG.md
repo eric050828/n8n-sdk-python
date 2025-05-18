@@ -2,6 +2,15 @@
 
 This document records all notable changes to n8n-sdk-python.
 
+## [0.1.3] - 2025-05-18
+
+### Changed
+- All client modules now include complete docstrings , covering module, class, and method levels.
+- Improved code documentation for maintainability and IDE support.
+
+### Docs
+- All client classes and methods now have standardized, detailed docstrings.
+
 ## [0.1.2] - 2025-05-17
 
 ### Fixed

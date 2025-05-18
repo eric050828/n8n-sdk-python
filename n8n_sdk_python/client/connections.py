@@ -13,17 +13,20 @@ from ..models.workflows import Workflow, Connection # Connection model is used i
 
 class ConnectionsClient(BaseClient):
     """
-    n8n 節點連接 API 客戶端類。
+    Client for managing connections between nodes in workflows.
+
+    Provides methods for managing connections between nodes in workflows,
+    including listing, creating, and deleting connections.
     """
     
     # Modify __init__ method
     def __init__(self, base_url: Optional[str] = None, api_key: Optional[str] = None):
         """
-        初始化節點連接客戶端
+        Initialize the connections client.
         
         Args:
-            base_url: n8n API 的基礎 URL
-            api_key: n8n API 金鑰
+            base_url: Base URL for the n8n API, defaults to environment variable or localhost
+            api_key: Authentication key for n8n API, defaults to environment variable
         """
         super().__init__(base_url=base_url, api_key=api_key)
         self._workflows_client_instance = None # Renamed to avoid conflict with property
@@ -31,8 +34,11 @@ class ConnectionsClient(BaseClient):
     @property
     def workflows_client(self):
         """
-        懶加載 WorkflowsClient 實例，避免循環引用
-        傳遞自身的 base_url 和 api_key 給 WorkflowsClient
+        Lazy load WorkflowsClient instance to avoid circular references.
+        Pass base_url and api_key from self (ConnectionsClient instance) to WorkflowsClient.
+
+        Returns:
+            WorkflowsClient instance
         """
         if self._workflows_client_instance is None:
             from .workflows import WorkflowClient # Corrected import name
@@ -42,14 +48,14 @@ class ConnectionsClient(BaseClient):
     
     async def list_connections(self, workflow_id: str, source_node: Optional[str] = None) -> dict[str, dict[str, list[list[Connection]]]]:
         """
-        列出工作流程中的節點連接
+        List connections in a workflow.
         
         Args:
-            workflow_id: 工作流程 ID
-            source_node: 可選的來源節點名稱，用於過濾連接
+            workflow_id: Workflow ID
+            source_node: Optional source node name, used to filter connections
             
         Returns:
-            包含連接信息的字典，格式為 {node_name: {type: [[connections]]}}
+            Dictionary containing connection information, format: {node_name: {type: [[connections]]}}
         """
         workflow = await self.workflows_client.get_workflow(workflow_id)
         if not workflow:
@@ -76,19 +82,19 @@ class ConnectionsClient(BaseClient):
         target_index: int = 0
     ) -> bool:
         """
-        在工作流程中建立兩個節點之間的連接
+        Create a connection between two nodes in a workflow.
         
         Args:
-            workflow_id: 工作流程 ID
-            source_node: 來源節點名稱
-            target_node: 目標節點名稱
-            source_type: 來源輸出類型，通常為 'main'
-            target_type: 目標輸入類型，通常為 'main'
-            source_index: 來源輸出索引
-            target_index: 目標輸入索引
+            workflow_id: Workflow ID
+            source_node: Source node name
+            target_node: Target node name
+            source_type: Source output type, usually 'main'
+            target_type: Target input type, usually 'main'
+            source_index: Source output index
+            target_index: Target input index
             
         Returns:
-            操作是否成功
+            True if the connection was created successfully, False otherwise
         """
         # 獲取當前工作流程
         workflow = await self.workflows_client.get_workflow(workflow_id)
@@ -144,21 +150,21 @@ class ConnectionsClient(BaseClient):
         target_index: Optional[int] = None
     ) -> bool:
         """
-        刪除工作流程中兩個節點之間的連接
+        Delete a connection between two nodes in a workflow.
         
         Args:
-            workflow_id: 工作流程 ID
-            source_node: 來源節點名稱
-            target_node: 目標節點名稱
-            source_type: 來源輸出類型，通常為 'main'
-            target_type: 目標輸入類型，通常為 'main'
-            source_index: 來源輸出索引，如果為 None，刪除所有匹配的連接
-            target_index: 目標輸入索引，如果為 None，刪除所有匹配的連接
+            workflow_id: Workflow ID
+            source_node: Source node name
+            target_node: Target node name
+            source_type: Source output type, usually 'main'
+            target_type: Target input type, usually 'main'
+            source_index: Source output index, if None, delete all matching connections
+            target_index: Target input index, if None, delete all matching connections
             
         Returns:
-            操作是否成功
+            True if the connection was deleted successfully, False otherwise
         """
-        # 獲取當前工作流程
+        # Get the current workflow
         workflow = await self.workflows_client.get_workflow(workflow_id)
         if not workflow:
             return False

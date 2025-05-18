@@ -1,3 +1,10 @@
+"""
+Base client for n8n SDK providing HTTP communication with n8n API.
+
+This module contains the base class for all n8n API clients, offering
+standard HTTP methods and error handling for API communication.
+"""
+
 import os
 from typing import Any, Optional
 
@@ -8,15 +15,21 @@ from ..utils.errors import N8nAPIError
 
 
 class BaseClient:
-    """n8n API 客戶端基礎類，提供基本的 HTTP 方法"""
+    """
+    Base client class for n8n API communication.
+    
+    Provides fundamental HTTP methods and request handling for interacting
+    with the n8n API, including error handling and response processing.
+    """
     
     def __init__(self, base_url: Optional[str] = None, api_key: Optional[str] = None, timeout: int = 30):
         """
-        初始化 n8n API 客戶端
+        Initialize the n8n base API client.
         
         Args:
-            base_url: n8n API 的基礎 URL，默認使用配置中的值
-            api_key: n8n API 金鑰，默認使用配置中的值
+            base_url: Base URL for the n8n API, defaults to environment variable or localhost
+            api_key: Authentication key for n8n API, defaults to environment variable
+            timeout: Request timeout in seconds, defaults to 30
         """
         self.base_url = base_url or os.getenv("N8N_BASE_URL", "http://localhost:5678")
         self.api_key = api_key or os.getenv("N8N_API_KEY")
@@ -33,21 +46,21 @@ class BaseClient:
         timeout: Optional[int] = None
     ) -> Any:
         """
-        執行 HTTP 請求
+        Execute an HTTP request to the n8n API.
         
         Args:
-            method: HTTP 方法 (GET, POST, PATCH, DELETE)
-            endpoint: API 端點路徑
-            params: URL 查詢參數
-            json_payload: 請求體 JSON 資料
-            headers: 額外的 HTTP 標頭
-            timeout: 請求超時時間（秒）
+            method: HTTP method (GET, POST, PUT, PATCH, DELETE)
+            endpoint: API endpoint path
+            params: Optional URL query parameters
+            json_payload: Optional JSON data for request body
+            headers: Optional additional HTTP headers
+            timeout: Optional request timeout in seconds
             
         Returns:
-            響應資料（通常是字典或列表）
+            Response data (typically a dictionary or list)
             
         Raises:
-            N8nApiError: 當 API 請求失敗時
+            N8nApiError: When the API request fails
         """
         url = f"{self.base_url}/api/{endpoint.lstrip('/')}"
         request_headers = {**self.headers, **(headers or {})}
@@ -72,7 +85,7 @@ class BaseClient:
                 
                 log.debug(f"Response status: {response.status_code}")
                 
-                # 嘗試以 JSON 解析響應
+                # Try to parse response as JSON
                 if response.content:
                     try:
                         response_data = response.json()
@@ -81,7 +94,7 @@ class BaseClient:
                 else:
                     response_data = None
                 
-                # 檢查錯誤
+                # Check for errors
                 if response.is_error:
                     error_msg = f"n8n API error: {response.status_code}"
                     if isinstance(response_data, dict) and "message" in response_data:
@@ -110,7 +123,20 @@ class BaseClient:
         params: Optional[dict[str, Any]] = None,
         headers: Optional[dict[str, str]] = None
     ) -> Any:
-        """執行 GET 請求"""
+        """
+        Execute a GET request to the n8n API.
+        
+        Args:
+            endpoint: API endpoint path
+            params: Optional URL query parameters
+            headers: Optional additional HTTP headers
+            
+        Returns:
+            Response data from the API
+            
+        Raises:
+            N8nApiError: When the API request fails
+        """
         return await self._request("GET", endpoint, params=params, headers=headers)
     
     async def put(
@@ -120,7 +146,21 @@ class BaseClient:
         params: Optional[dict[str, Any]] = None,
         headers: Optional[dict[str, str]] = None
     ) -> Any:
-        """執行 PUT 請求"""
+        """
+        Execute a PUT request to the n8n API.
+        
+        Args:
+            endpoint: API endpoint path
+            json: Optional JSON payload for the request body
+            params: Optional URL query parameters
+            headers: Optional additional HTTP headers
+            
+        Returns:
+            Response data from the API
+            
+        Raises:
+            N8nApiError: When the API request fails
+        """
         return await self._request("PUT", endpoint, json_payload=json, params=params, headers=headers)
     
     async def post(
@@ -130,7 +170,21 @@ class BaseClient:
         params: Optional[dict[str, Any]] = None,
         headers: Optional[dict[str, str]] = None
     ) -> Any:
-        """執行 POST 請求"""
+        """
+        Execute a POST request to the n8n API.
+        
+        Args:
+            endpoint: API endpoint path
+            json: Optional JSON payload for the request body
+            params: Optional URL query parameters
+            headers: Optional additional HTTP headers
+            
+        Returns:
+            Response data from the API
+            
+        Raises:
+            N8nApiError: When the API request fails
+        """
         return await self._request("POST", endpoint, json_payload=json, params=params, headers=headers)
     
     async def patch(
@@ -140,7 +194,21 @@ class BaseClient:
         params: Optional[dict[str, Any]] = None,
         headers: Optional[dict[str, str]] = None
     ) -> Any:
-        """執行 PATCH 請求"""
+        """
+        Execute a PATCH request to the n8n API.
+        
+        Args:
+            endpoint: API endpoint path
+            json: Optional JSON payload for the request body
+            params: Optional URL query parameters
+            headers: Optional additional HTTP headers
+            
+        Returns:
+            Response data from the API
+            
+        Raises:
+            N8nApiError: When the API request fails
+        """
         return await self._request("PATCH", endpoint, json_payload=json, params=params, headers=headers)
     
     async def delete(
@@ -149,5 +217,18 @@ class BaseClient:
         params: Optional[dict[str, Any]] = None,
         headers: Optional[dict[str, str]] = None
     ) -> Any:
-        """執行 DELETE 請求"""
+        """
+        Execute a DELETE request to the n8n API.
+        
+        Args:
+            endpoint: API endpoint path
+            params: Optional URL query parameters
+            headers: Optional additional HTTP headers
+            
+        Returns:
+            Response data from the API
+            
+        Raises:
+            N8nApiError: When the API request fails
+        """
         return await self._request("DELETE", endpoint, params=params, headers=headers) 

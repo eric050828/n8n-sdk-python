@@ -1,6 +1,9 @@
 """
-n8n API 客戶端模組。
-這個模組包含與 n8n API 通信的客戶端類。
+N8n API client module for Python.
+
+This module provides client classes for interacting with n8n workflow 
+automation platform API, allowing programmatic access to workflows, 
+executions, credentials, and other resources.
 """
 
 import os
@@ -23,16 +26,21 @@ from .connections import ConnectionsClient
 
 class N8nClient:
     """
-    n8n API 完整客戶端類，整合所有API功能。
+    Main n8n API client integrating all API functionality.
+    
+    This client serves as a convenience wrapper around the individual
+    specialized clients, providing access to all n8n API resources and
+    operations through a single interface. It handles authentication and
+    connection details for all sub-clients automatically.
     """
     
     def __init__(self, base_url: Optional[str] = None, api_key: Optional[str] = None):
         """
-        初始化 n8n API 客戶端
+        Initialize the n8n API client.
         
         Args:
-            base_url: n8n API 的基礎 URL
-            api_key: n8n API 金鑰
+            base_url: Base URL for the n8n API, defaults to environment variable or localhost
+            api_key: Authentication key for n8n API, defaults to environment variable
         """
         self.base_url = base_url or os.getenv("N8N_BASE_URL", "http://localhost:5678")
         self.api_key = api_key or os.getenv("N8N_API_KEY")
